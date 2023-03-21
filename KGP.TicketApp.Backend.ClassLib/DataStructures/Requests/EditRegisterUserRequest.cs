@@ -1,6 +1,6 @@
-﻿namespace KGP.TicketApp.Backend.DataStructures.Requests
+﻿namespace KGP.TicketApp.Backend.Libraries.DataStructures.Requests
 {
-    public class EditRegisterUserRequest
+    public record EditRegisterUserRequest
     {
         public string Name { get; set; }
         public string Password { get; set; }

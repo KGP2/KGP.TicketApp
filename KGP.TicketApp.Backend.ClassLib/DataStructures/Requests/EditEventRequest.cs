@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace KGP.TicketApp.Backend.DataStructures.Requests
+﻿namespace KGP.TicketApp.Backend.Libraries.DataStructures.Requests
 {
-    public class EditEventRequest
+    public record EditEventRequest
     {
         public DateTime Date { get; set; }
         public string Place { get; set; }

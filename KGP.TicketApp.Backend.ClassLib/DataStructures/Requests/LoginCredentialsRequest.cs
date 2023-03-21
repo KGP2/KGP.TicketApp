@@ -1,6 +1,6 @@
-﻿namespace KGP.TicketApp.Backend.DataStructures.Requests
+﻿namespace KGP.TicketApp.Backend.Libraries.DataStructures.Requests
 {
-    public class LoginCredentialsRequest
+    public record LoginCredentialsRequest
     {
         #region Properties
         public string Email

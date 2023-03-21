@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Web.Virtualization;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-
-namespace KGP.TicketApp.Backend.DataStructures.DTOs
+﻿namespace KGP.TicketApp.Backend.Libraries.DataStructures.DTOs
 {
-    public class EventDTO
+    public record EventDTO
     {
         public string Id { get; set; }
         public string Name { get; set; }

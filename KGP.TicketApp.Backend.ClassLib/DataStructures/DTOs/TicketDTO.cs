@@ -1,6 +1,6 @@
-﻿namespace KGP.TicketApp.Backend.DataStructures.DTOs
+﻿namespace KGP.TicketApp.Backend.Libraries.DataStructures.DTOs
 {
-    public class TicketDTO
+    public record TicketDTO
     {
         public string TicketId { get; set; }
         public string EventId { get; set; }

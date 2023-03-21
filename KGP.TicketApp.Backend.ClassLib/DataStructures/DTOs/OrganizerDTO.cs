@@ -1,6 +1,6 @@
-﻿namespace KGP.TicketApp.Backend.DataStructures.DTOs
+﻿namespace KGP.TicketApp.Backend.Libraries.DataStructures.DTOs
 {
-    public class OrganizerDTO
+    public record OrganizerDTO
     {
         public string Id { get; set; }
         public string Name { get; set; }    

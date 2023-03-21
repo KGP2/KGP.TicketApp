@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGP.TicketApp.Backend", "KGP.TicketApp.Backend\KGP.TicketApp.Backend.csproj", "{C2A1D4AF-5B4A-4242-8DB5-C6F8F71E0F2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Backend", "KGP.TicketApp.Backend\KGP.TicketApp.Backend.csproj", "{C2A1D4AF-5B4A-4242-8DB5-C6F8F71E0F2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGP.TicketApp.Backend.Tests", "KGP.TicketApp.Backend.Tests\KGP.TicketApp.Backend.Tests.csproj", "{4F26A5B9-7787-46E8-BF7A-D57F4D0A12BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Backend.Tests", "KGP.TicketApp.Backend.Tests\KGP.TicketApp.Backend.Tests.csproj", "{4F26A5B9-7787-46E8-BF7A-D57F4D0A12BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGP.TicketApp.Backend.ClassLib", "KGP.TicketApp.Backend.ClassLib\KGP.TicketApp.Backend.ClassLib.csproj", "{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{4F26A5B9-7787-46E8-BF7A-D57F4D0A12BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F26A5B9-7787-46E8-BF7A-D57F4D0A12BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F26A5B9-7787-46E8-BF7A-D57F4D0A12BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

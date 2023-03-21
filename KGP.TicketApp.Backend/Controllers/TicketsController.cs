@@ -1,5 +1,5 @@
-﻿using KGP.TicketApp.Backend.DataStructures.DTOs;
-using KGP.TicketApp.Backend.DataStructures.Requests;
+﻿using KGP.TicketApp.Backend.Libraries.DataStructures.DTOs;
+using KGP.TicketApp.Backend.Libraries.DataStructures.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
