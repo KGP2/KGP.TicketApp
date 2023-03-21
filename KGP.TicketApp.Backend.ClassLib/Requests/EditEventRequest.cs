@@ -1,4 +1,4 @@
-﻿namespace KGP.TicketApp.Backend.Libraries.DataStructures.Requests
+﻿namespace KGP.TicketApp.Model.Requests
 {
     public record EditEventRequest
     {
