@@ -1,7 +1,9 @@
-﻿using KGP.TicketApp.Model.DTOs;
+﻿using KGP.TicketApp.Backend.Options;
+using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace KGP.TicketApp.Backend.Controllers
 {

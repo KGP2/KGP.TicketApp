@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KGP.TicketApp.Backend.ClassLib\KGP.TicketApp.Model.csproj" />
+    <ProjectReference Include="..\KGP.TicketApp.Model\KGP.TicketApp.Model.csproj" />
   </ItemGroup>
 
 </Project>
