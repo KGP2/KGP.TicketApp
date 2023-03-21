@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Backend", "KG
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Backend.Tests", "KGP.TicketApp.Backend.Tests\KGP.TicketApp.Backend.Tests.csproj", "{4F26A5B9-7787-46E8-BF7A-D57F4D0A12BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGP.TicketApp.Backend.ClassLib", "KGP.TicketApp.Backend.ClassLib\KGP.TicketApp.Backend.ClassLib.csproj", "{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Model", "KGP.TicketApp.Model\KGP.TicketApp.Model.csproj", "{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

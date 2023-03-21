@@ -1,5 +1,5 @@
-﻿using KGP.TicketApp.Backend.Libraries.DataStructures.DTOs;
-using KGP.TicketApp.Backend.Libraries.DataStructures.Requests;
+﻿using KGP.TicketApp.Model.DTOs;
+using KGP.TicketApp.Model.Requests;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -15,7 +15,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/clients/login
         [HttpPost("clients/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClientsLogin([FromBody] LoginCredentialsRequest request)
         {
@@ -24,7 +24,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/organizers/login        
         [HttpPost("organizers/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizersLogin([FromBody] LoginCredentialsRequest request)
         {
@@ -71,7 +71,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/clients
         [HttpPost("clients")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClients([FromBody] TakeSkipRequest request)
         {
@@ -80,7 +80,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/organizers
         [HttpPost("organizers")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizers([FromBody] TakeSkipRequest request)
         {
@@ -112,7 +112,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // GET users/clients/{id}
         [HttpGet("clients/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetClient(string id)
@@ -122,7 +122,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // GET users/organizers/{id}
         [HttpGet("organizers/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetOrganizer(string id)
