@@ -24,4 +24,6 @@ jobs:
         run: dotnet build --configuration Release
         
       - name: Test with dotnet
+        env: 
+          AzureConfigurationConnectionString: ${{ secrets.AZURECONFIGURATIONCONNECTIONSTRING }}
         run: dotnet test --configuration Release
