@@ -23,12 +23,18 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
+        env: 
+          AzureConfigurationConnectionString: ${{ secrets.AZURECONFIGURATIONCONNECTIONSTRING }}
         run: dotnet build --configuration Release
         
       - name: Test with dotnet
+        env: 
+          AzureConfigurationConnectionString: ${{ secrets.AZURECONFIGURATIONCONNECTIONSTRING }}
         run: dotnet test --configuration Release
         
       - name: dotnet publish
+        env: 
+          AzureConfigurationConnectionString: ${{ secrets.AZURECONFIGURATIONCONNECTIONSTRING }}
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
