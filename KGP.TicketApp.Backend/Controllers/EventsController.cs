@@ -42,6 +42,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEvents()
         {
+            int x = 0;
             return BadRequest();
         }
 
