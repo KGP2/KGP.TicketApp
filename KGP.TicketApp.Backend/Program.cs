@@ -8,6 +8,12 @@ namespace KGP.TicketApp.Backend
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure logging
+            builder.Logging
+                .ClearProviders()
+                .AddConsole()
+                .AddAzureWebAppDiagnostics();
+
             // Add configuration
             builder.Configuration.AddAzureAppConfiguration(builder.Configuration["AzureConfigurationConnectionString"]);
             builder.Services.Configure<ApplicationOptions>(builder.Configuration.GetSection("Backend"));
