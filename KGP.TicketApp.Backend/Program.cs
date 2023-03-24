@@ -1,4 +1,6 @@
 using KGP.TicketApp.Backend.Options;
+using KGP.TicketApp.Model.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace KGP.TicketApp.Backend
 {
@@ -20,6 +22,11 @@ namespace KGP.TicketApp.Backend
 
             // Add services to the container.
             builder.Services.AddControllers();
+            builder.Services.AddDbContext<DatabaseContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().DatabaseConnectionString,
+                subbuilder => subbuilder.MigrationsAssembly("KGP.TicketApp.Backend"));
+            });
 
             // Configure Swagger
             builder.Services.AddEndpointsApiExplorer();
@@ -41,5 +48,3 @@ namespace KGP.TicketApp.Backend
         }
     }
 }
-
-
