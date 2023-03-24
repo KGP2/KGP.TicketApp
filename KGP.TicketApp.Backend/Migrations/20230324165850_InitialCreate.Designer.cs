@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KGP.TicketApp.Backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230324030050_InitialCreate")]
+    [Migration("20230324165850_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,19 +25,34 @@ namespace KGP.TicketApp.Backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ClientEvent", b =>
+            modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.ClientEvent_Liking", b =>
                 {
-                    b.Property<Guid>("LikedEventsId")
+                    b.Property<Guid>("LikingClientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ParticipantsListId")
+                    b.Property<Guid>("LikedEventId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("LikedEventsId", "ParticipantsListId");
+                    b.HasKey("LikingClientId", "LikedEventId");
 
-                    b.HasIndex("ParticipantsListId");
+                    b.HasIndex("LikedEventId");
 
-                    b.ToTable("ClientEvent");
+                    b.ToTable("ClientEvent_Likings");
+                });
+
+            modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.ClientEvent_Participating", b =>
+                {
+                    b.Property<Guid>("ParticipatingClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ParticipatedEventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ParticipatingClientId", "ParticipatedEventId");
+
+                    b.HasIndex("ParticipatedEventId");
+
+                    b.ToTable("ClientEvent_Participatings");
                 });
 
             modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.Event", b =>
@@ -84,9 +99,6 @@ namespace KGP.TicketApp.Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
@@ -97,8 +109,6 @@ namespace KGP.TicketApp.Backend.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
 
                     b.HasIndex("EventId");
 
@@ -123,6 +133,11 @@ namespace KGP.TicketApp.Backend.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<string>("Surname")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -135,7 +150,7 @@ namespace KGP.TicketApp.Backend.Migrations
 
                     b.ToTable("Users");
 
-                    b.HasDiscriminator<string>("UserType").HasValue("User");
+                    b.HasDiscriminator<string>("UserType");
 
                     b.UseTphMappingStrategy();
                 });
@@ -162,19 +177,42 @@ namespace KGP.TicketApp.Backend.Migrations
                     b.HasDiscriminator().HasValue("Organizer");
                 });
 
-            modelBuilder.Entity("ClientEvent", b =>
+            modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.ClientEvent_Liking", b =>
                 {
-                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Event", null)
-                        .WithMany()
-                        .HasForeignKey("LikedEventsId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Event", "LikedEvent")
+                        .WithMany("ClientEvent_Likings")
+                        .HasForeignKey("LikedEventId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Client", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantsListId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Client", "LikingClient")
+                        .WithMany("ClientEvent_Likings")
+                        .HasForeignKey("LikingClientId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
+
+                    b.Navigation("LikedEvent");
+
+                    b.Navigation("LikingClient");
+                });
+
+            modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.ClientEvent_Participating", b =>
+                {
+                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Event", "ParticipatedEvent")
+                        .WithMany("ClientEvent_Participatings")
+                        .HasForeignKey("ParticipatedEventId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Client", "ParticipatingClient")
+                        .WithMany("ClientEvent_Participatings")
+                        .HasForeignKey("ParticipatingClientId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("ParticipatedEvent");
+
+                    b.Navigation("ParticipatingClient");
                 });
 
             modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.Event", b =>
@@ -231,20 +269,16 @@ namespace KGP.TicketApp.Backend.Migrations
 
             modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.Ticket", b =>
                 {
-                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Client", null)
-                        .WithMany("Tickets")
-                        .HasForeignKey("ClientId");
-
                     b.HasOne("KGP.TicketApp.Model.Database.Tables.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Organizer", "Owner")
-                        .WithMany()
+                    b.HasOne("KGP.TicketApp.Model.Database.Tables.Client", "Owner")
+                        .WithMany("Tickets")
                         .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -252,8 +286,19 @@ namespace KGP.TicketApp.Backend.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.Event", b =>
+                {
+                    b.Navigation("ClientEvent_Likings");
+
+                    b.Navigation("ClientEvent_Participatings");
+                });
+
             modelBuilder.Entity("KGP.TicketApp.Model.Database.Tables.Client", b =>
                 {
+                    b.Navigation("ClientEvent_Likings");
+
+                    b.Navigation("ClientEvent_Participatings");
+
                     b.Navigation("Tickets");
                 });
 

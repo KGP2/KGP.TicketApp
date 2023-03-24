@@ -19,6 +19,7 @@ namespace KGP.TicketApp.Backend.Migrations
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     UserType = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CompanyName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
@@ -53,27 +54,47 @@ namespace KGP.TicketApp.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClientEvent",
+                name: "ClientEvent_Likings",
                 columns: table => new
                 {
-                    LikedEventsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ParticipantsListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    LikedEventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LikingClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClientEvent", x => new { x.LikedEventsId, x.ParticipantsListId });
+                    table.PrimaryKey("PK_ClientEvent_Likings", x => new { x.LikingClientId, x.LikedEventId });
                     table.ForeignKey(
-                        name: "FK_ClientEvent_Events_LikedEventsId",
-                        column: x => x.LikedEventsId,
+                        name: "FK_ClientEvent_Likings_Events_LikedEventId",
+                        column: x => x.LikedEventId,
                         principalTable: "Events",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ClientEvent_Users_ParticipantsListId",
-                        column: x => x.ParticipantsListId,
+                        name: "FK_ClientEvent_Likings_Users_LikingClientId",
+                        column: x => x.LikingClientId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClientEvent_Participatings",
+                columns: table => new
+                {
+                    ParticipatedEventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ParticipatingClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientEvent_Participatings", x => new { x.ParticipatingClientId, x.ParticipatedEventId });
+                    table.ForeignKey(
+                        name: "FK_ClientEvent_Participatings_Events_ParticipatedEventId",
+                        column: x => x.ParticipatedEventId,
+                        principalTable: "Events",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ClientEvent_Participatings_Users_ParticipatingClientId",
+                        column: x => x.ParticipatingClientId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -105,8 +126,7 @@ namespace KGP.TicketApp.Backend.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IsValidated = table.Column<bool>(type: "bit", nullable: false),
-                    ClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    IsValidated = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -118,32 +138,26 @@ namespace KGP.TicketApp.Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tickets_Users_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Tickets_Users_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientEvent_ParticipantsListId",
-                table: "ClientEvent",
-                column: "ParticipantsListId");
+                name: "IX_ClientEvent_Likings_LikedEventId",
+                table: "ClientEvent_Likings",
+                column: "LikedEventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientEvent_Participatings_ParticipatedEventId",
+                table: "ClientEvent_Participatings",
+                column: "ParticipatedEventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_OrganizerId",
                 table: "Events",
                 column: "OrganizerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tickets_ClientId",
-                table: "Tickets",
-                column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_EventId",
@@ -160,7 +174,10 @@ namespace KGP.TicketApp.Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ClientEvent");
+                name: "ClientEvent_Likings");
+
+            migrationBuilder.DropTable(
+                name: "ClientEvent_Participatings");
 
             migrationBuilder.DropTable(
                 name: "Locations");

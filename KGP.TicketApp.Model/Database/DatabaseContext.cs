@@ -21,6 +21,9 @@ namespace KGP.TicketApp.Model.Database
             SetUpUserTypeConversion(modelBuilder);
             SetUpUserDiscriminatorColumn(modelBuilder);
             SetUpEventOwnershipOfLocation(modelBuilder);
+            SetUpClientEventLikingRelationship(modelBuilder);
+            SetUpClientEventParticipatingRelationship(modelBuilder);
+            SetUpClientTicketRelationship(modelBuilder);
         }
 
         private static void SetUpUserTypeConversion(ModelBuilder modelBuilder)
@@ -34,7 +37,6 @@ namespace KGP.TicketApp.Model.Database
         {
             modelBuilder.Entity<User>()
                 .HasDiscriminator(user => user.UserType)
-                .HasValue(typeof(User), User.Types.User)
                 .HasValue(typeof(Organizer), User.Types.Organizer)
                 .HasValue(typeof(Client), User.Types.Client);
         }
@@ -43,6 +45,56 @@ namespace KGP.TicketApp.Model.Database
         {
             modelBuilder.Entity<Event>()
                 .OwnsOne(e => e.Place);
+        }
+
+        private static void SetUpClientEventLikingRelationship(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Client>()
+                .HasMany(c => c.LikedEvents)
+                .WithMany(e => e.LikingClients)
+                .UsingEntity<ClientEvent_Liking>(
+                j => j
+                    .HasOne(l => l.LikedEvent)
+                    .WithMany(e => e.ClientEvent_Likings)
+                    .HasForeignKey(l => l.LikedEventId)
+                    .OnDelete(DeleteBehavior.ClientCascade),
+                j => j
+                    .HasOne(l => l.LikingClient)
+                    .WithMany(c => c.ClientEvent_Likings)
+                    .HasForeignKey(l => l.LikingClientId)
+                    .OnDelete(DeleteBehavior.ClientCascade),
+                j => j
+                    .HasKey(l => new {l.LikingClientId, l.LikedEventId})
+                );
+        }
+
+        private static void SetUpClientEventParticipatingRelationship(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Client>()
+                .HasMany(c => c.ParticipatedEvents)
+                .WithMany(e => e.ParticipantsList)
+                .UsingEntity<ClientEvent_Participating>(
+                j => j
+                    .HasOne(l => l.ParticipatedEvent)
+                    .WithMany(e => e.ClientEvent_Participatings)
+                    .HasForeignKey(l => l.ParticipatedEventId)
+                    .OnDelete(DeleteBehavior.ClientCascade),
+                j => j
+                    .HasOne(l => l.ParticipatingClient)
+                    .WithMany(c => c.ClientEvent_Participatings)
+                    .HasForeignKey(l => l.ParticipatingClientId)
+                    .OnDelete(DeleteBehavior.ClientCascade),
+                j => j
+                    .HasKey(l => new { l.ParticipatingClientId, l.ParticipatedEventId })
+                );
+        }
+
+        private static void SetUpClientTicketRelationship(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Ticket>()
+                .HasOne(t => t.Owner)
+                .WithMany(c => c.Tickets)
+                .OnDelete(DeleteBehavior.ClientNoAction);
         }
     }
 }

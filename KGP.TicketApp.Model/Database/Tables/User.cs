@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KGP.TicketApp.Model.Database.Tables
 {
-    public record User
+    public abstract record User
     {
         public Guid Id { get; set; }
 
@@ -21,8 +21,14 @@ namespace KGP.TicketApp.Model.Database.Tables
         [MaxLength(256)]
         public string Email { get; set; } = null!;
 
+        /// <summary>
+        /// Hashed password
+        /// </summary>
+        [MaxLength(1000)]
+        public string Password { get; set; } = null!;
+
         /// <remarks>
-        /// Property used as a discriminator column in Table-per-Hierarchy inheritance model, as described in:
+        /// Property used as a discriminator column in Table-per-Concrete inheritance model, as described in:
         /// <see href="https://learn.microsoft.com/en-us/ef/core/modeling/inheritance"/>
         /// </remarks>        
         [Column(TypeName = "nvarchar(50)")]
@@ -30,7 +36,6 @@ namespace KGP.TicketApp.Model.Database.Tables
 
         public enum Types
         {
-            User,
             Organizer,
             Client
         }

@@ -18,7 +18,13 @@ namespace KGP.TicketApp.Model.Database.Tables
 
         public int ParticipantsLimit { get; set; }
 
-        public List<Client> ParticipantsList { get; set; } = null!;
+        public ICollection<Client> LikingClients { get; set; } = null!;
+
+        public List<ClientEvent_Liking> ClientEvent_Likings { get; set; } = null!;
+
+        public ICollection<Client> ParticipantsList { get; set; } = null!;
+
+        public List<ClientEvent_Participating> ClientEvent_Participatings { get; set; } = null!;
 
         [MaxLength(200)]
         public string Price { get; set; } = null!;

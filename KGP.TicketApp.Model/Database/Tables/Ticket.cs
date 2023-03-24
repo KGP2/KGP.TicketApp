@@ -6,9 +6,9 @@ namespace KGP.TicketApp.Model.Database.Tables
     {
         public Guid Id { get; set; }
 
-        public virtual Organizer Owner { get; set; } = null!;
+        public Client Owner { get; set; } = null!;
 
-        public virtual Event Event { get; set; } = null!;
+        public Event Event { get; set; } = null!;
 
         public bool IsValidated { get; set; }
     }
