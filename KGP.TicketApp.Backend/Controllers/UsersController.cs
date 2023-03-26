@@ -44,12 +44,11 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClientsLogin([FromBody] LoginCredentialsRequest request)
         {
-            var user = repositoryWrapper.UserRepository.FindUserByEmail(request.Email, Types.Client);
+            var user = repositoryWrapper.ClientRepository.FindUserByEmail(request.Email);
             if (user == null)
                 return BadRequest("Email doesn't exist in the system");
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
-
 
             Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings));
 
@@ -63,7 +62,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizersLogin([FromBody] LoginCredentialsRequest request)
         {
-            var user = (Organizer)repositoryWrapper.UserRepository.FindUserByEmail(request.Email, Types.Organizer);
+            var user = repositoryWrapper.OrganizerRepository.FindUserByEmail(request.Email);
             if (user == null)
                 return BadRequest("Email doesn't exist in the system");
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
@@ -81,7 +80,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterOrganizer([FromBody] RegisterOrganizerRequest request)
         {
-            repositoryWrapper.UserRepository.Create(new Organizer()
+            repositoryWrapper.OrganizerRepository.Create(new Organizer()
             {
                 Email = request.Email,
                 Name = request.Name,
@@ -100,7 +99,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterClient([FromBody] RegisterClientRequest request)
         {
-            repositoryWrapper.UserRepository.Create(new Client()
+            repositoryWrapper.ClientRepository.Create(new Client()
             {
                 Email = request.Email,
                 DateOfBirth = request.DateOFBirth,

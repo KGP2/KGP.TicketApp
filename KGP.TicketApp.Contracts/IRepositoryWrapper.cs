@@ -8,7 +8,8 @@ namespace KGP.TicketApp.Contracts
 {
     public interface IRepositoryWrapper
     {
-        IUserRepository UserRepository { get; }
+        IClientRepository ClientRepository { get; }
+        IOrganizerRepository OrganizerRepository { get; }
 
         void Save();
     }

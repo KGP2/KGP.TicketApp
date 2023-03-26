@@ -10,19 +10,19 @@ using static KGP.TicketApp.Model.Database.Tables.User;
 
 namespace KGP.TicketApp.Repositories
 {
-    public class UsersRepository : RepositoryBase<User>, IUserRepository
+    public class ClientRepository : RepositoryBase<Client>, IClientRepository
     {
         #region Constructors
 
-        public UsersRepository(DatabaseContext context) : base(context) {}
+        public ClientRepository(DatabaseContext context) : base(context) {}
 
         #endregion
 
         #region Interface methods
 
-        public User? FindUserByEmail(string email, Types type)
+        public Client? FindUserByEmail(string email)
         {
-            return DatabaseContext.Set<User>().FirstOrDefault(user => user.Email == email && user.UserType == type);
+            return DatabaseContext.Set<Client>().FirstOrDefault(user => user.Email == email);
         }
 
         #endregion

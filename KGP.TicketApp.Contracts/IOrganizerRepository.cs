@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static KGP.TicketApp.Model.Database.Tables.User;
 
 namespace KGP.TicketApp.Contracts
 {
-    public interface IUserRepository<T>
+    public interface IOrganizerRepository : IRepositoryBase<Organizer>, IUserRepository<Organizer>
     {
-        T? FindUserByEmail(string email);
     }
 }

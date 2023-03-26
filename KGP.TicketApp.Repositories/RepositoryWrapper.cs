@@ -13,7 +13,8 @@ namespace KGP.TicketApp.Repositories
         #region Fields
 
         private DatabaseContext databaseContext;
-        private IUserRepository userRepository;
+        private IClientRepository clientRepository;
+        private IOrganizerRepository organizerRepository;
 
         #endregion
 
@@ -25,14 +26,24 @@ namespace KGP.TicketApp.Repositories
 
         #region Properties
 
-        public IUserRepository UserRepository
+        public IClientRepository ClientRepository
         {
             get
             {
-                if (userRepository == null)
-                    userRepository = new UsersRepository(databaseContext);
+                if (clientRepository == null)
+                    clientRepository = new ClientRepository(databaseContext);
 
-                return userRepository;
+                return clientRepository;
+            }
+        }
+        public IOrganizerRepository OrganizerRepository
+        {
+            get
+            {
+                if (organizerRepository == null)
+                    organizerRepository = new OrganizerRepository(databaseContext);
+
+                return organizerRepository;
             }
         }
 
