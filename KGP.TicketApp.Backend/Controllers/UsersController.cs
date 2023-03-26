@@ -1,7 +1,15 @@
-﻿using KGP.TicketApp.Model.DTOs;
+﻿using BCrypt.Net;
+using KGP.TicketApp.Backend.Helpers;
+using KGP.TicketApp.Backend.Options;
+using KGP.TicketApp.Contracts;
+using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketApp.Model.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using Microsoft.Extensions.Options;
+using BCrypt;
+using static KGP.TicketApp.Model.Database.Tables.User;
+using KGP.TicketApp.Model.DTOs;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,44 +17,101 @@ namespace KGP.TicketApp.Backend.Controllers
 {
     [Route("users")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
+        #region Fields
+
+        private ApplicationOptions settings;
+        private IRepositoryWrapper repositoryWrapper;
+
+        #endregion
+
+        #region Constructors
+        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper)
+        {
+            this.settings = settings.Value;
+            this.repositoryWrapper = repositoryWrapper;
+        }
+        #endregion
+
         #region Post methods
 
         // POST users/clients/login
+        [AllowAnonymous]
         [HttpPost("clients/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClientsLogin([FromBody] LoginCredentialsRequest request)
         {
-            return BadRequest();
+            var user = repositoryWrapper.UserRepository.FindUserByEmail(request.Email, Types.Client);
+            if (user == null)
+                return BadRequest("Email doesn't exist in the system");
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+                return BadRequest("Password is incorrect");
+
+
+            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings));
+
+            return Ok(new ClientDTO() { Id = user.Id.ToString(), Name = user.Name, Surname = user.Surname });
         }
 
-        // POST users/organizers/login        
+        // POST users/organizers/login
+        [AllowAnonymous]
         [HttpPost("organizers/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizersLogin([FromBody] LoginCredentialsRequest request)
         {
-            return BadRequest();
+            var user = (Organizer)repositoryWrapper.UserRepository.FindUserByEmail(request.Email, Types.Organizer);
+            if (user == null)
+                return BadRequest("Email doesn't exist in the system");
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+                return BadRequest("Password is incorrect");
+
+            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings));
+
+            return Ok(new OrganizerDTO() { Id = user.Id.ToString(), Name = user.Name, Surname = user.Surname, CompanyName = user.CompanyName });
         }
 
-        // POST users/registerOrganizer       
+        // POST users/registerOrganizer
+        [AllowAnonymous]
         [HttpPost("registerOrganizer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterOrganizer([FromBody] RegisterOrganizerRequest request)
         {
-            return BadRequest();
+            repositoryWrapper.UserRepository.Create(new Organizer()
+            {
+                Email = request.Email,
+                Name = request.Name,
+                Surname = request.Surname,
+                Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                UserType = Types.Organizer,
+                CompanyName = request.CompanyName
+            });
+            return Ok();
         }
 
         // POST users/registerClient
+        [AllowAnonymous]
         [HttpPost("registerClient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterClient([FromBody] RegisterClientRequest request)
         {
-            return BadRequest();
+            repositoryWrapper.UserRepository.Create(new Client()
+            {
+                Email = request.Email,
+                DateOfBirth = request.DateOFBirth,
+                Name = request.Name,
+                Surname = request.Surname,
+                Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                UserType = Types.Client
+            });
+            repositoryWrapper.Save();
+
+            return Ok();
         }
 
         // POST users/editClient/{id}       
@@ -71,7 +136,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/clients
         [HttpPost("clients")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClients([FromBody] TakeSkipRequest request)
         {
@@ -80,7 +145,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/organizers
         [HttpPost("organizers")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizers([FromBody] TakeSkipRequest request)
         {

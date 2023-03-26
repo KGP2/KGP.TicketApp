@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Backend.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Model", "KGP.TicketApp.Model\KGP.TicketApp.Model.csproj", "{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGP.TicketApp.Repositories", "KGP.TicketApp.Repositories\KGP.TicketApp.Repositories.csproj", "{D9584664-794C-4313-A7CF-1CE184B45809}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGP.TicketApp.Contracts", "KGP.TicketApp.Contracts\KGP.TicketApp.Contracts.csproj", "{6B5F07E1-F9DB-480A-BA8E-D24459B1D92A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE1E7C27-A55D-41CC-9B9E-FA34F9434940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9584664-794C-4313-A7CF-1CE184B45809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9584664-794C-4313-A7CF-1CE184B45809}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9584664-794C-4313-A7CF-1CE184B45809}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9584664-794C-4313-A7CF-1CE184B45809}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B5F07E1-F9DB-480A-BA8E-D24459B1D92A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B5F07E1-F9DB-480A-BA8E-D24459B1D92A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B5F07E1-F9DB-480A-BA8E-D24459B1D92A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B5F07E1-F9DB-480A-BA8E-D24459B1D92A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

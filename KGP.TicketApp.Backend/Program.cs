@@ -1,6 +1,12 @@
 using KGP.TicketApp.Backend.Options;
+using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database;
+using KGP.TicketApp.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace KGP.TicketApp.Backend
 {
@@ -20,6 +26,26 @@ namespace KGP.TicketApp.Backend
             builder.Configuration.AddAzureAppConfiguration(builder.Configuration["AzureConfigurationConnectionString"]);
             builder.Services.Configure<ApplicationOptions>(builder.Configuration.GetSection("Backend"));
 
+            //Add authentication
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtKey)),
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+            builder.Services.AddAuthorization();
+
             // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddDbContext<DatabaseContext>(options =>
@@ -31,6 +57,7 @@ namespace KGP.TicketApp.Backend
             // Configure Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
             var app = builder.Build();
 
@@ -39,7 +66,7 @@ namespace KGP.TicketApp.Backend
             app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

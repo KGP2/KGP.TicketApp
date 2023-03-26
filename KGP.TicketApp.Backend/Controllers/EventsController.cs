@@ -1,6 +1,7 @@
 ﻿using KGP.TicketApp.Backend.Options;
 using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -9,6 +10,7 @@ namespace KGP.TicketApp.Backend.Controllers
 {
     [Route("events")]
     [ApiController]
+    [Authorize]
     public class EventsController : ControllerBase
     {
         #region Post methods
@@ -17,7 +19,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult PostEvents([FromBody] Event request)
+        public IActionResult PostEvents([FromBody] EventDTO request)
         {
             return BadRequest();
         }
@@ -38,7 +40,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // GET events
         [HttpGet()]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Event[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEvents()
         {
@@ -47,7 +49,7 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // GET events/{id}
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Event))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]   
         public IActionResult GetEvent(string id)
@@ -58,7 +60,7 @@ namespace KGP.TicketApp.Backend.Controllers
         // GET eventsByOrganizer/{organizerId}
         [Route("/eventsByOrganizer/{organizerId}")]
         [HttpGet()]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Event[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsByOrganizer(string organizerId)
         {
@@ -68,7 +70,7 @@ namespace KGP.TicketApp.Backend.Controllers
         // GET eventList
         [Route("/eventList")]
         [HttpGet()]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Event[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsList([FromBody] Guid[] ids)
         {
