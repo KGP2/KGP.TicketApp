@@ -14,7 +14,7 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Post methods
 
         /// <summary>
-        /// Log in as a client.
+        /// [NYI] Log in as a client.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
