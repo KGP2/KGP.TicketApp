@@ -11,7 +11,11 @@ namespace KGP.TicketApp.Backend.Controllers
     {
         #region Post methods
 
-        // POST tickets    
+        /// <summary>
+        /// [NYI] Create a ticket.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns> 
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -21,7 +25,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // POST tickets/validate/{ticketId}   
+        /// <summary>
+        /// [NYI] Validate specified ticket.
+        /// </summary>
+        /// <param name="ticketId"></param>
+        /// <returns></returns> 
         [HttpPost("validate/{ticketId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -35,7 +43,10 @@ namespace KGP.TicketApp.Backend.Controllers
 
         #region Get methods
 
-        // GET tickets
+        /// <summary>
+        /// [NYI] Get all tickets.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Ticket[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -44,7 +55,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // GET tickets/{ticketId}
+        /// <summary>
+        /// [NYI] Get details of specified ticket.
+        /// </summary>
+        /// <param name="ticketId"></param>
+        /// <returns></returns>
         [HttpGet("{ticketId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Ticket))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -54,7 +69,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // GET ticketsByOwner/ownerId
+        /// <summary>
+        /// [NYI] Get all tickets owned by specified owner.
+        /// </summary>
+        /// <param name="ownerId"></param>
+        /// <returns></returns>
         [HttpGet("/ticketsByOwner/{ownerId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Ticket[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
