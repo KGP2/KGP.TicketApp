@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using KGP.TicketApp.Backend.Options;
+﻿using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,7 +8,7 @@ namespace KGP.TicketApp.Backend.Helpers
 {
     public static class JwtTokenHelper
     {
-        public static string CreateToken(string email, string id, ApplicationOptions settings)
+        public static string CreateToken(string email, string id, string key, string issuer)
         {
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -22,9 +21,9 @@ namespace KGP.TicketApp.Backend.Helpers
                     Guid.NewGuid().ToString())
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(30),
-                Issuer = settings.JwtIssuer,
+                Issuer = issuer,
                 Audience = id,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.JwtKey)), SecurityAlgorithms.HmacSha512Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)), SecurityAlgorithms.HmacSha512Signature)
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -33,11 +32,11 @@ namespace KGP.TicketApp.Backend.Helpers
 
             return stringToken;
         }
-        public static bool IsIdValid(string JwtToken, string id)
+        public static bool IsIdValid(string JwtToken, string hashedId)
         {
             var encodedToken = new JwtSecurityToken(JwtToken);
 
-            return encodedToken.Audiences.First() == id;
+            return encodedToken.Audiences.First() == hashedId;
         }
     }
 }

@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\KGP.TicketApp.Model\KGP.TicketApp.Model.csproj" />
     <ProjectReference Include="..\KGP.TicketApp.Repositories\KGP.TicketApp.Repositories.csproj" />
+    <ProjectReference Include="..\KGP.TicketAPP.Utils\KGP.TicketAPP.Utils.csproj" />
   </ItemGroup>
 
 </Project>

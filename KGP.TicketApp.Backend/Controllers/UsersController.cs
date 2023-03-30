@@ -1,5 +1,4 @@
-﻿using BCrypt.Net;
-using KGP.TicketApp.Backend.Helpers;
+﻿using KGP.TicketApp.Backend.Helpers;
 using KGP.TicketApp.Backend.Options;
 using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database.Tables;
@@ -7,9 +6,10 @@ using KGP.TicketApp.Model.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using BCrypt;
 using static KGP.TicketApp.Model.Database.Tables.User;
 using KGP.TicketApp.Model.DTOs;
+using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
+using KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,14 +24,19 @@ namespace KGP.TicketApp.Backend.Controllers
 
         private ApplicationOptions settings;
         private IRepositoryWrapper repositoryWrapper;
+        private IHashAlgorithm hashAlgorithm;
 
         #endregion
 
         #region Constructors
-        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper)
+        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper, IHashAlgorithmFactory hashAlgorithmFactory)
         {
             this.settings = settings.Value;
             this.repositoryWrapper = repositoryWrapper;
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+            hashAlgorithm = hashAlgorithmFactory.Create(config.GetValue<string>("HashAlgorithm"));
         }
         #endregion
 
@@ -47,12 +52,12 @@ namespace KGP.TicketApp.Backend.Controllers
             var user = repositoryWrapper.ClientRepository.FindUserByEmail(request.Email);
             if (user == null)
                 return BadRequest("Email doesn't exist in the system");
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+            if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings));
+            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer));
 
-            return Ok(new ClientDTO() { Id = user.Id.ToString(), Name = user.Name, Surname = user.Surname });
+            return Ok(ClientDTO.FromDatabaseUser(user));
         }
 
         // POST users/organizers/login
@@ -65,12 +70,12 @@ namespace KGP.TicketApp.Backend.Controllers
             var user = repositoryWrapper.OrganizerRepository.FindUserByEmail(request.Email);
             if (user == null)
                 return BadRequest("Email doesn't exist in the system");
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+            if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings));
+            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer));
 
-            return Ok(new OrganizerDTO() { Id = user.Id.ToString(), Name = user.Name, Surname = user.Surname, CompanyName = user.CompanyName });
+            return Ok(OrganizerDTO.FromDatabaseUser(user));
         }
 
         // POST users/registerOrganizer
@@ -85,7 +90,7 @@ namespace KGP.TicketApp.Backend.Controllers
                 Email = request.Email,
                 Name = request.Name,
                 Surname = request.Surname,
-                Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                Password = hashAlgorithm.Hash(request.Password),
                 UserType = Types.Organizer,
                 CompanyName = request.CompanyName
             });
@@ -105,7 +110,7 @@ namespace KGP.TicketApp.Backend.Controllers
                 DateOfBirth = request.DateOFBirth,
                 Name = request.Name,
                 Surname = request.Surname,
-                Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                Password = hashAlgorithm.Hash(request.Password),
                 UserType = Types.Client
             });
             repositoryWrapper.Save();

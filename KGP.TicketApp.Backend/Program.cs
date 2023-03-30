@@ -2,9 +2,12 @@ using KGP.TicketApp.Backend.Options;
 using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database;
 using KGP.TicketApp.Repositories;
+using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
+using KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -58,6 +61,7 @@ namespace KGP.TicketApp.Backend
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            builder.Services.AddScoped<IHashAlgorithmFactory, HashAlgorithmFactory>();
 
             var app = builder.Build();
 
