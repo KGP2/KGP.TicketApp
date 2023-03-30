@@ -10,6 +10,8 @@ using static KGP.TicketApp.Model.Database.Tables.User;
 using KGP.TicketApp.Model.DTOs;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory;
+using KGP.TicketAPP.Utils.Validation;
+using KGP.TicketApp.Backend.Validation;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,14 +27,17 @@ namespace KGP.TicketApp.Backend.Controllers
         private ApplicationOptions settings;
         private IRepositoryWrapper repositoryWrapper;
         private IHashAlgorithm hashAlgorithm;
+        private IValidationService validationService;
 
         #endregion
 
         #region Constructors
-        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper, IHashAlgorithmFactory hashAlgorithmFactory)
+        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper, IHashAlgorithmFactory hashAlgorithmFactory, IValidationService validationService)
         {
             this.settings = settings.Value;
             this.repositoryWrapper = repositoryWrapper;
+            this.validationService = validationService;
+
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
@@ -85,6 +90,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterOrganizer([FromBody] RegisterOrganizerRequest request)
         {
+            if (!RegisterValidation.ValidateRegister(request.Email, request.Password, validationService, out string error))
+                return BadRequest(error);
+
             repositoryWrapper.OrganizerRepository.Create(new Organizer()
             {
                 Email = request.Email,
@@ -94,6 +102,8 @@ namespace KGP.TicketApp.Backend.Controllers
                 UserType = Types.Organizer,
                 CompanyName = request.CompanyName
             });
+            repositoryWrapper.Save();
+
             return Ok();
         }
 
@@ -104,6 +114,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterClient([FromBody] RegisterClientRequest request)
         {
+            if (!RegisterValidation.ValidateRegister(request.Email, request.Password, validationService, out string error))
+                return BadRequest(error);
+
             repositoryWrapper.ClientRepository.Create(new Client()
             {
                 Email = request.Email,

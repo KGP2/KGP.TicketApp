@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ namespace KGP.TicketApp.Model.Database.Tables
         /// <see href="https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address"/>
         /// </remarks>
         [MaxLength(256)]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; } = null!;
 
         /// <summary>
