@@ -45,6 +45,11 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/clients/login
         [AllowAnonymous]
+        /// <summary>
+        /// Log in as a client.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("clients/login")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,6 +68,11 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/organizers/login
         [AllowAnonymous]
+        /// <summary>
+        /// Log in as an organizer.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>      
         [HttpPost("organizers/login")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -81,6 +91,11 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/registerOrganizer
         [AllowAnonymous]
+        /// <summary>
+        /// Register as an organizer.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>     
         [HttpPost("registerOrganizer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,6 +120,12 @@ namespace KGP.TicketApp.Backend.Controllers
 
         // POST users/registerClient
         [AllowAnonymous]
+        /// <summary>
+        /// Register as a client.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+
         [HttpPost("registerClient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -127,7 +148,12 @@ namespace KGP.TicketApp.Backend.Controllers
             return Ok();
         }
 
-        // POST users/editClient/{id}       
+        /// <summary>
+        /// [NYI] Edit specified client.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>      
         [HttpPost("editClient/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -137,7 +163,12 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // POST users/editOrganizer/{id}       
+        /// <summary>
+        /// [NYI] Edit specified organizer.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>      
         [HttpPost("editOrganizer/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -147,7 +178,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // POST users/clients
+        /// <summary>
+        /// [NYI] Get all clients.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("clients")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -156,7 +191,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // POST users/organizers
+        /// <summary>
+        /// [NYI] Get all organizers.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("organizers")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -165,7 +204,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // POST users/blockOrganizer/{id}       
+        /// <summary>
+        /// [NYI] Block a specified organizer.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>     
         [HttpPost("blockOrganizer/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -175,7 +218,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // POST users/blockClient/{id}       
+        /// <summary>
+        /// [NYI] Block a specified client.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>      
         [HttpPost("blockClient/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -186,9 +233,14 @@ namespace KGP.TicketApp.Backend.Controllers
         }
 
         #endregion
+
         #region Get methods
 
-        // GET users/clients/{id}
+        /// <summary>
+        /// [NYI] Get details of specified client.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("clients/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -198,7 +250,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // GET users/organizers/{id}
+        /// <summary>
+        /// [NYI] Get details of specified organizer.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("organizers/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -209,6 +265,5 @@ namespace KGP.TicketApp.Backend.Controllers
         }
 
         #endregion
-
     }
 }

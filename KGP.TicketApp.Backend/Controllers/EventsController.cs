@@ -15,7 +15,11 @@ namespace KGP.TicketApp.Backend.Controllers
     {
         #region Post methods
 
-        // POST events    
+        /// <summary>
+        /// [NYI] Create an event.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns> 
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -24,7 +28,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // POST events/{id}      
+        /// <summary>
+        /// [NYI] Edit specified event.
+        /// </summary>
+        /// <param name="request"></param> 
+        /// <returns></returns>  
         [HttpPost("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,7 +46,10 @@ namespace KGP.TicketApp.Backend.Controllers
 
         #region Get methods
 
-        // GET events
+        /// <summary>
+        /// [NYI] Get all events.
+        /// </summary>
+        /// <returns></returns> 
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -47,17 +58,24 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // GET events/{id}
+        /// <summary>
+        /// [NYI] Get details of specified event.
+        /// </summary>
+        /// <returns></returns> 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]   
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetEvent(string id)
         {
             return BadRequest();
         }
 
-        // GET eventsByOrganizer/{organizerId}
+        /// <summary>
+        /// [NYI] Get all events owned by specified organizer.
+        /// </summary>
+        /// <param name="organizerId"></param>
+        /// <returns></returns> 
         [Route("/eventsByOrganizer/{organizerId}")]
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
@@ -67,7 +85,11 @@ namespace KGP.TicketApp.Backend.Controllers
             return BadRequest();
         }
 
-        // GET eventList
+        /// <summary>
+        /// [NYI] Get details of several specified events.
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
         [Route("/eventList")]
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
@@ -81,7 +103,11 @@ namespace KGP.TicketApp.Backend.Controllers
 
         #region Delete methods
 
-        // DELETE events/{id}
+        /// <summary>
+        /// [NYI] Delete specified event.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
