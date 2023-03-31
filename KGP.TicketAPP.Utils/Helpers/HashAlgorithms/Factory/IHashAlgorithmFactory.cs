@@ -8,6 +8,6 @@ namespace KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory
 {
     public interface IHashAlgorithmFactory
     {
-        IHashAlgorithm Create(string algorithmName);
+        IHashAlgorithm Create(HashAlgorithmType algorithmType);
     }
 }

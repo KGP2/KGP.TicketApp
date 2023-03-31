@@ -8,14 +8,14 @@ namespace KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory
 {
     public class HashAlgorithmFactory : IHashAlgorithmFactory
     {
-        public IHashAlgorithm Create(string algorithmName)
+        public IHashAlgorithm Create(HashAlgorithmType algorithmType)
         {
-            switch (algorithmName)
+            switch (algorithmType)
             {
-                case "BCrypt":
+                case HashAlgorithmType.BCrypt:
                     return new BCryptAlgorithm();
                 default:
-                    throw new ArgumentNullException(nameof(algorithmName), "Bad hash algorithm name, check config file");
+                    throw new ArgumentNullException(nameof(algorithmType), "Bad hash algorithm type, check config file");
             }
         }
     }

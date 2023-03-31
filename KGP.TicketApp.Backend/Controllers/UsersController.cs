@@ -37,11 +37,7 @@ namespace KGP.TicketApp.Backend.Controllers
             this.settings = settings.Value;
             this.repositoryWrapper = repositoryWrapper;
             this.validationService = validationService;
-
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-            hashAlgorithm = hashAlgorithmFactory.Create(config.GetValue<string>("HashAlgorithm"));
+            hashAlgorithm = hashAlgorithmFactory.Create(this.settings.HashAlgorithm);
         }
         #endregion
 
