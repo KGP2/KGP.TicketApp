@@ -1,5 +1,6 @@
 ﻿using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace KGP.TicketApp.Backend.Controllers
 {
     [Route("tickets")]
     [ApiController]
+    [Authorize]
     public class TicketsController : ControllerBase
     {
         #region Post methods
@@ -48,7 +50,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Ticket[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TicketDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetTickets()
         {
@@ -61,7 +63,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="ticketId"></param>
         /// <returns></returns>
         [HttpGet("{ticketId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Ticket))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TicketDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetTicket(string ticketId)
@@ -75,7 +77,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="ownerId"></param>
         /// <returns></returns>
         [HttpGet("/ticketsByOwner/{ownerId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Ticket[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TicketDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetTicketsByOwner(string ownerId)
