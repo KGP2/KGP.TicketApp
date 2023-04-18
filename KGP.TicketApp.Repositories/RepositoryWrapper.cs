@@ -13,9 +13,9 @@ namespace KGP.TicketApp.Repositories
         #region Fields
 
         private DatabaseContext databaseContext;
-        private IClientRepository clientRepository;
-        private IOrganizerRepository organizerRepository;
-        private IEventRepository eventRepository;
+        private IClientRepository? clientRepository;
+        private IOrganizerRepository? organizerRepository;
+        private IEventRepository? eventRepository;
 
         #endregion
 

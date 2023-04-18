@@ -29,6 +29,22 @@ namespace KGP.TicketApp.Repositories
                 .ToList();
         }
 
+        public List<Event> GetFilteredBy(DateTime? from, DateTime? to, string? city /*TODO*/, bool isFull)
+        {
+            var query = DatabaseContext.Set<Event>().AsQueryable();
+
+            if (from.HasValue)
+            {
+                query = query.Where(ev => ev.Date >= from);
+            }
+            if (to.HasValue)
+            {
+                query = query.Where(ev => ev.Date <= to);
+            }
+            // TODO
+            return query.ToList();
+        }
+
         #endregion
 
         #region Interface methods

@@ -3,13 +3,10 @@ using KGP.TicketApp.Backend.Options;
 using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database;
 using KGP.TicketApp.Repositories;
-using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory;
 using KGP.TicketAPP.Utils.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -37,9 +34,9 @@ namespace KGP.TicketApp.Backend
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
+            }).AddJwtBearer(options =>
             {
-                o.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtIssuer,
                     IssuerSigningKey = new SymmetricSecurityKey

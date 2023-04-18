@@ -1,7 +1,7 @@
 ﻿using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketApp.Model.DTOs;
-using KGP.TicketApp.Model.Requests;
+using KGP.TicketApp.Model.Requests.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +12,12 @@ namespace KGP.TicketApp.Backend.Controllers
     [Authorize]
     public class EventsController : ControllerBase
     {
-        private IEventRepository eventRepository;
+        private IRepositoryWrapper repositoryWrapper;
+        private IEventRepository eventRepository => repositoryWrapper.EventRepository;
 
         public EventsController(IRepositoryWrapper repositoryWrapper)
         {
-            this.eventRepository = repositoryWrapper.EventRepository;
+            this.repositoryWrapper = repositoryWrapper;
         }
 
         #region Post methods
@@ -29,18 +30,26 @@ namespace KGP.TicketApp.Backend.Controllers
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult PostEvents([FromBody] EventDTO request)
+        public IActionResult PostEvents([FromBody] CreateEventRequest request)
         {
-            // TODO
-            // authorize 
-            return BadRequest();
+            eventRepository.Create(new Event
+            {
+                Name = request.Name,
+                Date = request.Date,
+                Place = new Location(), // TODO
+                Organizer = new Organizer { Id = request.OrganizerId }, // TODO: perhaps take it from requesting user?
+                Price = request.Price.ToString(), // TODO
+                TicketSaleStartDate = request.SaleStartDate,
+                TicketSaleEndDate = request.SaleStartDate,
+                // TODO: photo
+            });
+            repositoryWrapper.Save();
+            return Ok();
         }
 
         /// <summary>
         /// Edit specified event.
         /// </summary>
-        /// <param name="request"></param> 
-        /// <param name="id"></param> 
         /// <returns></returns>  
         [HttpPost("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -64,7 +73,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetEvents()
+        public IActionResult GetEvents([FromBody] GetEventsRequest request)
         {
             // TODO
             return BadRequest();
@@ -140,9 +149,15 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteEvent(string id)
         {
-            // TODO
-            // authorize
-            return BadRequest();
+            if (!Guid.TryParse(id, out var guid))
+            {
+                return BadRequest("Invalid GUID.");
+            }
+
+            eventRepository.Delete(new Event { Id = guid });
+            repositoryWrapper.Save();
+
+            return Ok();
         }
 
         #endregion
