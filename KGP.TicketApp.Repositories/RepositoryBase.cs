@@ -47,5 +47,10 @@ namespace KGP.TicketApp.Repositories
         {
             DatabaseContext.Set<T>().Update(entity);
         }
+
+        public T? GetById(Guid id)
+        {
+            return DatabaseContext.Set<T>().Find(id);
+        }
     }
 }
