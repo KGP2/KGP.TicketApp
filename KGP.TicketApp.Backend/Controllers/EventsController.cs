@@ -1,10 +1,9 @@
-﻿using KGP.TicketApp.Backend.Options;
+﻿using KGP.TicketApp.Contracts;
+using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace KGP.TicketApp.Backend.Controllers
 {
@@ -13,10 +12,17 @@ namespace KGP.TicketApp.Backend.Controllers
     [Authorize]
     public class EventsController : ControllerBase
     {
+        private IEventRepository eventRepository;
+
+        public EventsController(IRepositoryWrapper repositoryWrapper)
+        {
+            this.eventRepository = repositoryWrapper.EventRepository;
+        }
+
         #region Post methods
 
         /// <summary>
-        /// [NYI] Create an event.
+        /// Create an event.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns> 
@@ -25,20 +31,25 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostEvents([FromBody] EventDTO request)
         {
+            // TODO
+            // authorize 
             return BadRequest();
         }
 
         /// <summary>
-        /// [NYI] Edit specified event.
+        /// Edit specified event.
         /// </summary>
         /// <param name="request"></param> 
+        /// <param name="id"></param> 
         /// <returns></returns>  
         [HttpPost("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostEditEvent([FromBody] EditEventRequest request, string id)
+        public IActionResult PostEditEvent([FromBody] EditEventRequest request, [FromQuery] string id)
         {
+            // TODO
+            // autorize
             return BadRequest();
         }
 
@@ -47,7 +58,7 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Get methods
 
         /// <summary>
-        /// [NYI] Get all events.
+        /// Get all events.
         /// </summary>
         /// <returns></returns> 
         [HttpGet()]
@@ -55,11 +66,12 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEvents()
         {
+            // TODO
             return BadRequest();
         }
 
         /// <summary>
-        /// [NYI] Get details of specified event.
+        /// Get details of specified event.
         /// </summary>
         /// <returns></returns> 
         [HttpGet("{id}")]
@@ -68,11 +80,20 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetEvent(string id)
         {
-            return BadRequest();
+            if (!Guid.TryParse(id, out var guid))
+            {
+                return BadRequest("Invalid GUID.");
+            }
+
+            return eventRepository.GetById(guid) switch
+            {
+                null => NotFound("Event not found."),
+                Event @event => Ok(EventDTO.FromDatabaseEvent(@event))
+            };
         }
 
         /// <summary>
-        /// [NYI] Get all events owned by specified organizer.
+        /// Get all events owned by specified organizer.
         /// </summary>
         /// <param name="organizerId"></param>
         /// <returns></returns> 
@@ -82,11 +103,16 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsByOrganizer(string organizerId)
         {
-            return BadRequest();
+            if (!Guid.TryParse(organizerId, out var guid))
+            {
+                return BadRequest("Invalid GUID.");
+            }
+
+            return Ok(eventRepository.GetByOrganizerId(guid));
         }
 
         /// <summary>
-        /// [NYI] Get details of several specified events.
+        /// Get details of several specified events.
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
@@ -96,7 +122,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsList([FromBody] Guid[] ids)
         {
-            return BadRequest();
+            return Ok(eventRepository.GetByIdList(ids));
         }
 
         #endregion
@@ -104,7 +130,7 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Delete methods
 
         /// <summary>
-        /// [NYI] Delete specified event.
+        /// Delete specified event.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -114,6 +140,8 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteEvent(string id)
         {
+            // TODO
+            // authorize
             return BadRequest();
         }
 

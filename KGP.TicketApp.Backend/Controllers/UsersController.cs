@@ -44,12 +44,12 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Post methods
 
         // POST users/clients/login
-        [AllowAnonymous]
         /// <summary>
         /// Log in as a client.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost("clients/login")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,12 +67,12 @@ namespace KGP.TicketApp.Backend.Controllers
         }
 
         // POST users/organizers/login
-        [AllowAnonymous]
         /// <summary>
         /// Log in as an organizer.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>      
+        [AllowAnonymous]
         [HttpPost("organizers/login")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -90,12 +90,12 @@ namespace KGP.TicketApp.Backend.Controllers
         }
 
         // POST users/registerOrganizer
-        [AllowAnonymous]
         /// <summary>
         /// Register as an organizer.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>     
+        [AllowAnonymous]
         [HttpPost("registerOrganizer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -119,13 +119,12 @@ namespace KGP.TicketApp.Backend.Controllers
         }
 
         // POST users/registerClient
-        [AllowAnonymous]
         /// <summary>
         /// Register as a client.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-
+        [AllowAnonymous]
         [HttpPost("registerClient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
