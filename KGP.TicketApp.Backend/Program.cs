@@ -38,7 +38,7 @@ namespace KGP.TicketApp.Backend
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer("Client", o =>
+            }).AddJwtBearer(JwtTokenHelper.Client, o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -50,7 +50,7 @@ namespace KGP.TicketApp.Backend
                     ValidateIssuerSigningKey = true,
                     AudienceValidator = JwtTokenHelper.ClientTypeValidator
                 };
-            }).AddJwtBearer("Organizer", o =>
+            }).AddJwtBearer(JwtTokenHelper.Organizer, o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters
                 {

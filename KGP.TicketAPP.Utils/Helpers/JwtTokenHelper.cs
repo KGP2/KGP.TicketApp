@@ -9,6 +9,11 @@ namespace KGP.TicketApp.Backend.Helpers
 {
     public static class JwtTokenHelper
     {
+        #region Fields
+        public const string Client = "Client";
+        public const string Organizer = "Organizer";
+        #endregion
+
         #region Public methods
         public static string CreateToken(string email, string id, string key, string issuer, Types userType)
         {
@@ -34,7 +39,7 @@ namespace KGP.TicketApp.Backend.Helpers
 
             return stringToken;
         }
-        public static bool IsIdValid(string JwtToken, string hashedId)
+        public static bool IsIdValid(this string JwtToken, string hashedId)
         {
             return hashedId == GetIdFromToken(JwtToken);
         }

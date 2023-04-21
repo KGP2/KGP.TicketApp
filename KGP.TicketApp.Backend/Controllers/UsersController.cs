@@ -155,7 +155,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>      
         [HttpPost("editClient/{id}")]
-        [Authorize(AuthenticationSchemes = "Client")]
+        [Authorize(AuthenticationSchemes = JwtTokenHelper.Client)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -171,7 +171,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>      
         [HttpPost("editOrganizer/{id}")]
-        [Authorize(AuthenticationSchemes = "Organizer")]
+        [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
