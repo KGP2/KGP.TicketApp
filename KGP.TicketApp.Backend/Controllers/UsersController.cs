@@ -61,7 +61,7 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer));
+            Response.Cookies.Append("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client));
 
             return Ok(ClientDTO.FromDatabaseUser(user));
         }
@@ -84,7 +84,7 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Headers.Add("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer));
+            Response.Cookies.Append("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer));
 
             return Ok(OrganizerDTO.FromDatabaseUser(user));
         }
@@ -155,6 +155,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>      
         [HttpPost("editClient/{id}")]
+        [Authorize(AuthenticationSchemes = "Client")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -170,6 +171,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>      
         [HttpPost("editOrganizer/{id}")]
+        [Authorize(AuthenticationSchemes = "Organizer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
