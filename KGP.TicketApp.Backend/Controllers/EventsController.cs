@@ -1,9 +1,14 @@
-﻿using KGP.TicketApp.Contracts;
+﻿using KGP.TicketApp.Backend.Helpers;
+using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using KGP.TicketAPP.Utils.Extensions;
+using KGP.TicketApp.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace KGP.TicketApp.Backend.Controllers
 {
@@ -12,6 +17,9 @@ namespace KGP.TicketApp.Backend.Controllers
     [Authorize]
     public class EventsController : ControllerBase
     {
+        private const string EventNotFound = "Event not found.";
+        private const string InvalidGuid = "Invalid Guid.";
+
         private IRepositoryWrapper repositoryWrapper;
         private IEventRepository eventRepository => repositoryWrapper.EventRepository;
 
@@ -28,6 +36,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <returns></returns> 
         [HttpPost()]
+        [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostEvents([FromBody] CreateEventRequest request)
@@ -36,9 +45,9 @@ namespace KGP.TicketApp.Backend.Controllers
             {
                 Name = request.Name,
                 Date = request.Date,
-                Place = new Location(), // TODO
-                Organizer = new Organizer { Id = request.OrganizerId }, // TODO: perhaps take it from requesting user?
-                Price = request.Price.ToString(), // TODO
+                Place = new Location(), // TODO: Fix when documentation updates
+                Organizer = new Organizer { Id = this.GetCallingUserIdFromCookie() },
+                Price = request.Price.ToString(), // TODO: Fix when documentation updates
                 TicketSaleStartDate = request.SaleStartDate,
                 TicketSaleEndDate = request.SaleStartDate,
                 // TODO: photo
@@ -52,14 +61,54 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <returns></returns>  
         [HttpPost("{id}")]
+        [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostEditEvent([FromBody] EditEventRequest request, [FromQuery] string id)
+        public IActionResult PostEditEvent([FromBody] EditEventRequest request, [FromQuery] Guid id)
         {
-            // TODO
-            // autorize
-            return BadRequest();
+            var eventToEdit = eventRepository.GetById(id);
+
+            if (eventToEdit == null)
+            {
+                return NotFound(EventNotFound);
+            }
+
+            if (eventToEdit.Organizer.Id != this.GetCallingUserIdFromCookie())
+            {
+                return Unauthorized();
+            }
+
+            EditEvent(eventToEdit, request);
+
+            eventRepository.Update(eventToEdit);
+            repositoryWrapper.Save();
+
+            return Ok();
+        }
+
+        private static void EditEvent(Event eventToEdit, EditEventRequest request)
+        {
+            if (request.ParticipiantsLimit != null)
+            {
+                eventToEdit.ParticipantsLimit = request.ParticipiantsLimit.Value;
+            }
+            if (request.Date != null)
+            {
+                eventToEdit.Date = request.Date.Value;
+            }
+            if (request.SaleStartDate != null)
+            {
+                eventToEdit.TicketSaleStartDate = request.SaleStartDate.Value;
+            }
+            if (request.SaleEndTime != null)
+            {
+                eventToEdit.TicketSaleEndDate = request.SaleEndTime.Value;
+            }
+            if (request.Place != null)
+            {
+                eventToEdit.Place = new Location(); // TODO: Fix when documentation updates
+            }
         }
 
         #endregion
@@ -75,7 +124,6 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEvents([FromBody] GetEventsRequest request)
         {
-            // TODO
             return BadRequest();
         }
 
@@ -87,16 +135,11 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetEvent(string id)
+        public IActionResult GetEvent(Guid id)
         {
-            if (!Guid.TryParse(id, out var guid))
+            return eventRepository.GetById(id) switch
             {
-                return BadRequest("Invalid GUID.");
-            }
-
-            return eventRepository.GetById(guid) switch
-            {
-                null => NotFound("Event not found."),
+                null => NotFound(EventNotFound),
                 Event @event => Ok(EventDTO.FromDatabaseEvent(@event))
             };
         }
@@ -110,14 +153,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetEventsByOrganizer(string organizerId)
+        public IActionResult GetEventsByOrganizer(Guid organizerId)
         {
-            if (!Guid.TryParse(organizerId, out var guid))
-            {
-                return BadRequest("Invalid GUID.");
-            }
-
-            return Ok(eventRepository.GetByOrganizerId(guid));
+            return Ok(eventRepository.GetByOrganizerId(organizerId));
         }
 
         /// <summary>
@@ -144,17 +182,25 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteEvent(string id)
+        public IActionResult DeleteEvent(Guid id)
         {
-            if (!Guid.TryParse(id, out var guid))
+            var @event = eventRepository.GetById(id);
+
+            if (@event == null)
             {
-                return BadRequest("Invalid GUID.");
+                return NotFound(EventNotFound);
             }
 
-            eventRepository.Delete(new Event { Id = guid });
+            if (@event.Organizer.Id != this.GetCallingUserIdFromCookie())
+            {
+                return Unauthorized();
+            }
+
+            eventRepository.Delete(@event);
             repositoryWrapper.Save();
 
             return Ok();
