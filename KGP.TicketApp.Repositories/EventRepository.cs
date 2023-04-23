@@ -1,6 +1,7 @@
 ﻿using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database;
 using KGP.TicketApp.Model.Database.Tables;
+using KGP.TicketApp.Model.Requests.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,19 +30,29 @@ namespace KGP.TicketApp.Repositories
                 .ToList();
         }
 
-        public List<Event> GetFilteredBy(DateTime? from, DateTime? to, string? city /*TODO*/, bool isFull)
+        public List<Event> GetByFilterFromRequest(GetEventsRequest request)
         {
             var query = DatabaseContext.Set<Event>().AsQueryable();
 
-            if (from.HasValue)
+            if (request.IsFull.HasValue)
             {
-                query = query.Where(ev => ev.Date >= from);
+                query = request.IsFull.Value
+                    ? query.Where(ev => ev.ParticipantsList.Count >= ev.ParticipantsLimit)
+                    : query.Where(ev => ev.ParticipantsList.Count < ev.ParticipantsLimit);
             }
-            if (to.HasValue)
+
+            if (request.DateFrom.HasValue)
             {
-                query = query.Where(ev => ev.Date <= to);
+                query = query.Where(ev => ev.Date >= request.DateFrom);
             }
-            // TODO
+
+            if (request.DateTo.HasValue)
+            {
+                query = query.Where(ev => ev.Date <= request.DateTo);
+            }
+
+            // TODO: Location
+
             return query.ToList();
         }
 

@@ -9,6 +9,7 @@ using System.Data;
 using KGP.TicketAPP.Utils.Extensions;
 using KGP.TicketApp.Repositories;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace KGP.TicketApp.Backend.Controllers
 {
@@ -18,7 +19,6 @@ namespace KGP.TicketApp.Backend.Controllers
     public class EventsController : ControllerBase
     {
         private const string EventNotFound = "Event not found.";
-        private const string InvalidGuid = "Invalid Guid.";
 
         private IRepositoryWrapper repositoryWrapper;
         private IEventRepository eventRepository => repositoryWrapper.EventRepository;
@@ -120,11 +120,12 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <returns></returns> 
         [HttpGet()]
+        [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEvents([FromBody] GetEventsRequest request)
         {
-            return BadRequest();
+            return Ok(eventRepository.GetByFilterFromRequest(request));
         }
 
         /// <summary>
@@ -132,6 +133,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <returns></returns> 
         [HttpGet("{id}")]
+        [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -165,6 +167,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <returns></returns>
         [Route("/eventList")]
         [HttpGet()]
+        [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsList([FromBody] Guid[] ids)
