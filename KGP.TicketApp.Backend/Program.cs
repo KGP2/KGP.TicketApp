@@ -37,7 +37,7 @@ namespace KGP.TicketApp.Backend
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(JwtTokenHelper.Client, o =>
             {
-                o.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtIssuer,
                     IssuerSigningKey = new SymmetricSecurityKey
