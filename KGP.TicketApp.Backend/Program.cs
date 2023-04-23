@@ -3,13 +3,10 @@ using KGP.TicketApp.Backend.Options;
 using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database;
 using KGP.TicketApp.Repositories;
-using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory;
 using KGP.TicketAPP.Utils.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using KGP.TicketApp.Backend.Helpers;
@@ -38,9 +35,9 @@ namespace KGP.TicketApp.Backend
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(JwtTokenHelper.Client, o =>
+            }).AddJwtBearer(JwtTokenHelper.Client, options =>
             {
-                o.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtIssuer,
                     IssuerSigningKey = new SymmetricSecurityKey
@@ -50,9 +47,9 @@ namespace KGP.TicketApp.Backend
                     ValidateIssuerSigningKey = true,
                     AudienceValidator = JwtTokenHelper.ClientTypeValidator
                 };
-            }).AddJwtBearer(JwtTokenHelper.Organizer, o =>
+            }).AddJwtBearer(JwtTokenHelper.Organizer, options =>
             {
-                o.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtIssuer,
                     IssuerSigningKey = new SymmetricSecurityKey
@@ -98,8 +95,11 @@ namespace KGP.TicketApp.Backend
 
             // Configure the HTTP request pipeline.
             app.UseSwagger();
-            app.UseSwaggerUI();
-            
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                options.RoutePrefix = string.Empty;
+            });
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
