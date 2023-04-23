@@ -8,11 +8,25 @@ namespace KGP.TicketAPP.Utils.Validation
 {
     public class EmailValidator : IValidator<string>
     {
-        public bool Validate(string obj, out string error)
+        public bool Validate(string email, out string error)
         {
-            error = "email is invalid";
+            error = "Email has invalid format";
 
-            return true;
+            var trimmedEmail = email.Trim();
+
+            if (trimmedEmail.EndsWith("."))
+            {
+                return false; 
+            }
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == trimmedEmail;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
