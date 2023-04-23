@@ -70,7 +70,12 @@ namespace KGP.TicketApp.Backend
                 options.UseSqlServer(builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().DatabaseConnectionString,
                 subbuilder => subbuilder.MigrationsAssembly("KGP.TicketApp.Backend"));
             });
-
+           builder.Services.AddCors(o => o.AddPolicy("CorsEnabled", builder =>
+           {
+               builder.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+           }));
             // Configure Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -95,10 +100,10 @@ namespace KGP.TicketApp.Backend
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 options.RoutePrefix = string.Empty;
             });
-
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors("CorsEnabled");
 
             app.MapControllers();
 
