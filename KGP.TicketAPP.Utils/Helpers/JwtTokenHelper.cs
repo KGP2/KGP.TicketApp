@@ -39,6 +39,7 @@ namespace KGP.TicketApp.Backend.Helpers
 
             return stringToken;
         }
+
         public static bool IsIdValid(this string JwtToken, string hashedId)
         {
             return hashedId == GetIdFromToken(JwtToken);
@@ -48,19 +49,21 @@ namespace KGP.TicketApp.Backend.Helpers
         {
             return Enum.Parse<Types>(audiences.First().Split(';').Last()) == Types.Client && audiences.Count() == 1;
         }
+
         public static bool OrganizerTypeValidator(IEnumerable<string> audiences, SecurityToken securityToken, TokenValidationParameters validationParameters)
         {
             return Enum.Parse<Types>(audiences.First().Split(';').Last()) == Types.Organizer && audiences.Count() == 1;
         }
-        #endregion
 
-        #region Private methods
-        private static string GetIdFromToken(string JwtToken)
+        public static string GetIdFromToken(string JwtToken)
         {
             var encodedToken = new JwtSecurityToken(JwtToken);
 
             return encodedToken.Audiences.First().Split(';').First();
         }
+        #endregion
+
+        #region Private methods
         private static Types GetUserTypeFromToken(string JwtToken)
         {
             var encodedToken = new JwtSecurityToken(JwtToken);
