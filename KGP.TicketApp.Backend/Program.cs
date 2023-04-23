@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using KGP.TicketApp.Backend.Helpers;
 
 namespace KGP.TicketApp.Backend
 {
@@ -37,7 +38,7 @@ namespace KGP.TicketApp.Backend
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
+            }).AddJwtBearer(JwtTokenHelper.Client, o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -46,9 +47,23 @@ namespace KGP.TicketApp.Backend
                     (Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtKey)),
                     ValidateIssuer = true,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true
+                    ValidateIssuerSigningKey = true,
+                    AudienceValidator = JwtTokenHelper.ClientTypeValidator
+                };
+            }).AddJwtBearer(JwtTokenHelper.Organizer, o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().JwtKey)),
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    AudienceValidator = JwtTokenHelper.OrganizerTypeValidator
                 };
             });
+
             builder.Services.AddAuthorization();
 
             // Add services to the container.
@@ -58,7 +73,12 @@ namespace KGP.TicketApp.Backend
                 options.UseSqlServer(builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().DatabaseConnectionString,
                 subbuilder => subbuilder.MigrationsAssembly("KGP.TicketApp.Backend"));
             });
-
+           builder.Services.AddCors(o => o.AddPolicy("CorsEnabled", builder =>
+           {
+               builder.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+           }));
             // Configure Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -79,10 +99,11 @@ namespace KGP.TicketApp.Backend
             // Configure the HTTP request pipeline.
             app.UseSwagger();
             app.UseSwaggerUI();
-
+            
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors("CorsEnabled");
 
             app.MapControllers();
 
