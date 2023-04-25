@@ -12,6 +12,7 @@ using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory;
 using KGP.TicketAPP.Utils.Validation;
 using KGP.TicketApp.Backend.Validation;
+using KGP.TicketApp.Repositories;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -235,31 +236,39 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Get methods
 
         /// <summary>
-        /// [NYI] Get details of specified client.
+        /// Get details of specified client.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("clients/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetClient(string id)
+        public IActionResult GetClient(Guid id)
         {
-            return BadRequest();
+            return repositoryWrapper.ClientRepository.GetById(id) switch
+            {
+                null => NotFound("Client not found"),
+                Client client => Ok(ClientDTO.FromDatabaseUser(client))
+            };
         }
 
         /// <summary>
-        /// [NYI] Get details of specified organizer.
+        /// Get details of specified organizer.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("organizers/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetOrganizer(string id)
+        public IActionResult GetOrganizer(Guid id)
         {
-            return BadRequest();
+            return repositoryWrapper.OrganizerRepository.GetById(id) switch
+            {
+                null => NotFound("Organizer not found"),
+                Organizer organizer => Ok(OrganizerDTO.FromDatabaseUser(organizer))
+            };
         }
 
         #endregion
