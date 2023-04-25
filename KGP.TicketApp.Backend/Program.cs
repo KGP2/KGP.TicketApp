@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using KGP.TicketApp.Backend.Helpers;
+using KGP.TicketApp.Backend.Validation;
 
 namespace KGP.TicketApp.Backend
 {
@@ -81,7 +82,7 @@ namespace KGP.TicketApp.Backend
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             builder.Services.AddScoped<IHashAlgorithmFactory, HashAlgorithmFactory>();
-            builder.Services.AddScoped<IValidationService, ValidationService>();
+            builder.Services.AddScoped<RegisterEditUserValidation>();
             builder.Services.AddSwaggerGen(options =>
             {
                 var basePath = AppContext.BaseDirectory;

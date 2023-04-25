@@ -32,11 +32,10 @@ namespace KGP.TicketApp.Backend.Controllers
         #endregion
 
         #region Constructors
-        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper, IHashAlgorithmFactory hashAlgorithmFactory, IValidationService validationService)
+        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper, IHashAlgorithmFactory hashAlgorithmFactory)
         {
             this.settings = settings.Value;
             this.repositoryWrapper = repositoryWrapper;
-            this.validationService = validationService;
             hashAlgorithm = hashAlgorithmFactory.Create(this.settings.HashAlgorithm);
         }
         #endregion
@@ -96,14 +95,12 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <returns></returns>     
         [AllowAnonymous]
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("registerOrganizer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterOrganizer([FromBody] RegisterOrganizerRequest request)
         {
-            if (!RegisterValidation.ValidateRegister(request.Email, request.Password, validationService, out string error))
-                return BadRequest(error);
-
             repositoryWrapper.OrganizerRepository.Create(new Organizer()
             {
                 Email = request.Email,
@@ -125,14 +122,12 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [AllowAnonymous]
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("registerClient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterClient([FromBody] RegisterClientRequest request)
         {
-            if (!RegisterValidation.ValidateRegister(request.Email, request.Password, validationService, out string error))
-                return BadRequest(error);
-
             repositoryWrapper.ClientRepository.Create(new Client()
             {
                 Email = request.Email,
@@ -152,13 +147,14 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <param name="id"></param>
-        /// <returns></returns>      
+        /// <returns></returns>
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("editClient/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Client)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostEditClient([FromBody] EditRegisterUserRequest request, string id)
+        public IActionResult PostEditClient([FromBody] EditRegisterUserRequest request, Guid id)
         {
             return BadRequest();
         }
@@ -168,7 +164,8 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <param name="id"></param>
-        /// <returns></returns>      
+        /// <returns></returns>    
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("editOrganizer/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -214,7 +211,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostBlockOrganizer(string id)
+        public IActionResult PostBlockOrganizer(Guid id)
         {
             return BadRequest();
         }
@@ -228,7 +225,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostBlockClient(string id)
+        public IActionResult PostBlockClient(Guid id)
         {
             return BadRequest();
         }
