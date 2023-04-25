@@ -10,12 +10,10 @@ namespace KGP.TicketApp.Backend.Tests.Utils
 {
     public class ValidationServiceTests
     {
-        private ValidationService validationService;
 
         [SetUp]
         public void Setup()
         {
-            validationService = new ValidationService();
         }
 
         [Test]
@@ -37,34 +35,34 @@ namespace KGP.TicketApp.Backend.Tests.Utils
                 "@example.com"
                 };
 
-            validEmails.All(it => validationService.EmailValidator.Validate(it, out _)).Should().BeTrue();
-            invalidEmails.All(it => !validationService.EmailValidator.Validate(it, out _)).Should().BeTrue();
+            validEmails.All(it => ValidationService.EmailValidator.Validate(it, out _)).Should().BeTrue();
+            invalidEmails.All(it => !ValidationService.EmailValidator.Validate(it, out _)).Should().BeTrue();
         }
 
         [Test]
         public void PasswordValidationTest()
         {
             string validPassword = "dfkldfG7^";
-            validationService.PasswordValidator.Validate(validPassword, out _).Should().BeTrue();
+            ValidationService.PasswordValidator.Validate(validPassword, out _).Should().BeTrue();
 
             string noLowerCaseLetterPassword = "DJFKFKF7&";
-            validationService.PasswordValidator.Validate(noLowerCaseLetterPassword, out string error1).Should().BeFalse();
+            ValidationService.PasswordValidator.Validate(noLowerCaseLetterPassword, out string error1).Should().BeFalse();
             error1.Should().Be("Password should contain At least one lower case letter");
 
             string noUpperCaseLetterPassword = "dfkldfd7&";
-            validationService.PasswordValidator.Validate(noUpperCaseLetterPassword, out string error2).Should().BeFalse();
+            ValidationService.PasswordValidator.Validate(noUpperCaseLetterPassword, out string error2).Should().BeFalse();
             error2.Should().Be("Password should contain At least one upper case letter");
 
             string tooShortPassword = "Ddfd7&";
-            validationService.PasswordValidator.Validate(tooShortPassword, out string error3).Should().BeFalse();
+            ValidationService.PasswordValidator.Validate(tooShortPassword, out string error3).Should().BeFalse();
             error3.Should().Be("Password should not be less than 8 or greater than 25 characters");
 
             string noNumericValuePassword = "dfkldfdD&";
-            validationService.PasswordValidator.Validate(noNumericValuePassword, out string error4).Should().BeFalse();
+            ValidationService.PasswordValidator.Validate(noNumericValuePassword, out string error4).Should().BeFalse();
             error4.Should().Be("Password should contain At least one numeric value");
 
             string noSpecialCharacterPassword = "dfkldfd7D";
-            validationService.PasswordValidator.Validate(noSpecialCharacterPassword, out string error5).Should().BeFalse();
+            ValidationService.PasswordValidator.Validate(noSpecialCharacterPassword, out string error5).Should().BeFalse();
             error5.Should().Be("Password should contain At least one special case characters");
         }
     }
