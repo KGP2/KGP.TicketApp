@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Repositories"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Contracts", "KGP.TicketApp.Contracts\KGP.TicketApp.Contracts.csproj", "{6B5F07E1-F9DB-480A-BA8E-D24459B1D92A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGP.TicketAPP.Utils", "KGP.TicketAPP.Utils\KGP.TicketAPP.Utils.csproj", "{565CD5F0-4857-4B07-8D65-D7CDDC96D43B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGP.TicketApp.Utils", "KGP.TicketAPP.Utils\KGP.TicketApp.Utils.csproj", "{565CD5F0-4857-4B07-8D65-D7CDDC96D43B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
