@@ -82,6 +82,7 @@ namespace KGP.TicketApp.Backend
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             builder.Services.AddScoped<IHashAlgorithmFactory, HashAlgorithmFactory>();
+            builder.Services.AddScoped<IValidationService, ValidationService>();
             builder.Services.AddScoped<RegisterEditUserValidation>();
             builder.Services.AddScoped<TakeSkipValidation>();
             builder.Services.AddSwaggerGen(options =>

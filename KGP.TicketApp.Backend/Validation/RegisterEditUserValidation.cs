@@ -9,6 +9,16 @@ namespace KGP.TicketApp.Backend.Validation
 {
     public class RegisterEditUserValidation : IActionFilter
     {
+        #region Fields
+        private IValidationService validationService;
+        #endregion
+
+
+        #region Constructors
+        public RegisterEditUserValidation(IValidationService validationService) => this.validationService = validationService;
+        #endregion
+
+
         #region Interface methods
         public void OnActionExecuting(ActionExecutingContext context)
         {
@@ -22,9 +32,9 @@ namespace KGP.TicketApp.Backend.Validation
             StringBuilder stringBuilder = new StringBuilder();
             var req = (EditRegisterUserRequest)param.Value;
 
-            if (!ValidationService.EmailValidator.Validate(req.Email, out var error1))
+            if (!validationService.EmailValidator.Validate(req.Email, out var error1))
                 stringBuilder.AppendLine(error1);
-            if (!ValidationService.PasswordValidator.Validate(req.Password, out var error2))          
+            if (!validationService.PasswordValidator.Validate(req.Password, out var error2))          
                 stringBuilder.AppendLine(error2);
 
             if (stringBuilder.Length > 0)

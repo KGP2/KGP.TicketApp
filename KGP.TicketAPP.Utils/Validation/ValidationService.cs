@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace KGP.TicketAPP.Utils.Validation
 {
-    public static class ValidationService
+    public class ValidationService : IValidationService
     {
         #region Fields
 
-        private static PasswordValidator passwordValidator = new PasswordValidator();
-        private static EmailValidator emailValidator = new EmailValidator();
+        private PasswordValidator passwordValidator = new PasswordValidator();
+        private EmailValidator emailValidator = new EmailValidator();
 
         #endregion
 
         #region Properties
 
-        public static PasswordValidator PasswordValidator => passwordValidator;
+        public PasswordValidator PasswordValidator => passwordValidator;
 
-        public static EmailValidator EmailValidator => emailValidator;
+        public EmailValidator EmailValidator => emailValidator;
 
         #endregion
     }

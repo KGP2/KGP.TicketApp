@@ -11,7 +11,8 @@ namespace KGP.TicketAPP.Utils.Validation
     {
         public bool Validate(string input, out string error)
         {
-            error = string.Empty;
+            var stringBuilder = new StringBuilder();
+            bool ret = true;
 
             if (string.IsNullOrWhiteSpace(input))
             {
@@ -26,32 +27,34 @@ namespace KGP.TicketAPP.Utils.Validation
 
             if (!hasLowerChar.IsMatch(input))
             {
-                error = "Password should contain At least one lower case letter";
-                return false;
+                stringBuilder.AppendLine("Password should contain At least one lower case letter");
+                ret = false;
             }
-            else if (!hasUpperChar.IsMatch(input))
+            if (!hasUpperChar.IsMatch(input))
             {
-                error = "Password should contain At least one upper case letter";
-                return false;
+                stringBuilder.AppendLine("Password should contain At least one upper case letter");
+                ret = false;
             }
-            else if (!hasMiniMaxChars.IsMatch(input))
+            if (!hasMiniMaxChars.IsMatch(input))
             {
-                error = "Password should not be less than 8 or greater than 25 characters";
-                return false;
+                stringBuilder.AppendLine("Password should not be less than 8 or greater than 25 characters");
+                ret = false;
             }
-            else if (!hasNumber.IsMatch(input))
+            if (!hasNumber.IsMatch(input))
             {
-                error = "Password should contain At least one numeric value";
-                return false;
+                stringBuilder.AppendLine("Password should contain At least one numeric value");
+                ret = false;
             }
 
-            else if (!hasSymbols.IsMatch(input))
+           if (!hasSymbols.IsMatch(input))
             {
-                error = "Password should contain At least one special case characters";
-                return false;
+                stringBuilder.AppendLine("Password should contain At least one special case characters");
+                ret = false;
             }
 
-            return true;
+            error = stringBuilder.ToString();
+
+            return ret;
         }
     }
 }

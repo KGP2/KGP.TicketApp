@@ -21,7 +21,6 @@ namespace KGP.TicketApp.Backend.Controllers
 {
     [Route("users")]
     [ApiController]
-    [Authorize]
     [Authorize(AuthenticationSchemes = $"{JwtTokenHelper.Organizer},{JwtTokenHelper.Client}")]
     public class UsersController : ControllerBase
     {
@@ -30,7 +29,6 @@ namespace KGP.TicketApp.Backend.Controllers
         private ApplicationOptions settings;
         private IRepositoryWrapper repositoryWrapper;
         private IHashAlgorithm hashAlgorithm;
-        private IValidationService validationService;
 
         #endregion
 
@@ -248,8 +246,8 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult PostBlockOrganizer(Guid id)
         {
-            // Tego chyba nie implementujemy jak nie mamy admina
-            return BadRequest();
+            // TODO: Jak zrobimy admina
+                return BadRequest();
         }
 
         /// <summary>
@@ -263,7 +261,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult PostBlockClient(Guid id)
         {
-            // Tego chyba nie implementujemy jak nie mamy admina
+            // TODO: Jak zrobimy admina
             return BadRequest();
         }
 
