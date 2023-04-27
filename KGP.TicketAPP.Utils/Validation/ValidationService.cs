@@ -10,22 +10,10 @@ namespace KGP.TicketAPP.Utils.Validation
     {
         #region Fields
 
-        private PasswordValidator passwordValidator;
-        private EmailValidator emailValidator;
+        private PasswordValidator passwordValidator = new PasswordValidator();
+        private EmailValidator emailValidator = new EmailValidator();
 
         #endregion
-
-        #region Constructors
-
-        public ValidationService()
-        {
-            passwordValidator = new PasswordValidator();
-            emailValidator = new EmailValidator();
-        }
-
-        #endregion
-
-
 
         #region Properties
 

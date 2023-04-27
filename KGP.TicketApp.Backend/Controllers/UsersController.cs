@@ -12,6 +12,8 @@ using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms.Factory;
 using KGP.TicketAPP.Utils.Validation;
 using KGP.TicketApp.Backend.Validation;
+using KGP.TicketApp.Repositories;
+using KGP.TicketAPP.Utils.Extensions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,7 +21,7 @@ namespace KGP.TicketApp.Backend.Controllers
 {
     [Route("users")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = $"{JwtTokenHelper.Organizer},{JwtTokenHelper.Client}")]
     public class UsersController : ControllerBase
     {
         #region Fields
@@ -27,16 +29,14 @@ namespace KGP.TicketApp.Backend.Controllers
         private ApplicationOptions settings;
         private IRepositoryWrapper repositoryWrapper;
         private IHashAlgorithm hashAlgorithm;
-        private IValidationService validationService;
 
         #endregion
 
         #region Constructors
-        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper, IHashAlgorithmFactory hashAlgorithmFactory, IValidationService validationService)
+        public UsersController(IOptions<ApplicationOptions> settings, IRepositoryWrapper repositoryWrapper, IHashAlgorithmFactory hashAlgorithmFactory)
         {
             this.settings = settings.Value;
             this.repositoryWrapper = repositoryWrapper;
-            this.validationService = validationService;
             hashAlgorithm = hashAlgorithmFactory.Create(this.settings.HashAlgorithm);
         }
         #endregion
@@ -96,14 +96,12 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <returns></returns>     
         [AllowAnonymous]
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("registerOrganizer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterOrganizer([FromBody] RegisterOrganizerRequest request)
         {
-            if (!RegisterValidation.ValidateRegister(request.Email, request.Password, validationService, out string error))
-                return BadRequest(error);
-
             repositoryWrapper.OrganizerRepository.Create(new Organizer()
             {
                 Email = request.Email,
@@ -125,14 +123,12 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [AllowAnonymous]
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("registerClient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostRegisterClient([FromBody] RegisterClientRequest request)
         {
-            if (!RegisterValidation.ValidateRegister(request.Email, request.Password, validationService, out string error))
-                return BadRequest(error);
-
             repositoryWrapper.ClientRepository.Create(new Client()
             {
                 Email = request.Email,
@@ -148,61 +144,95 @@ namespace KGP.TicketApp.Backend.Controllers
         }
 
         /// <summary>
-        /// [NYI] Edit specified client.
+        /// Edit specified client.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="id"></param>
-        /// <returns></returns>      
+        /// <returns></returns>
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("editClient/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Client)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostEditClient([FromBody] EditRegisterUserRequest request, string id)
+        public IActionResult PostEditClient([FromBody] EditRegisterUserRequest request, Guid id)
         {
-            return BadRequest();
+            var clientToEdit = repositoryWrapper.ClientRepository.GetById(id);
+
+            if (clientToEdit == null)
+                return NotFound("Client not found");
+
+            if (clientToEdit.Id != this.GetCallingUserIdFromCookie())
+                return Unauthorized();
+
+            clientToEdit.UpdateUser(request);
+            repositoryWrapper.ClientRepository.Update(clientToEdit);
+            repositoryWrapper.Save();
+
+            return Ok();
         }
 
         /// <summary>
-        /// [NYI] Edit specified organizer.
+        /// Edit specified organizer.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="id"></param>
-        /// <returns></returns>      
+        /// <returns></returns>    
+        [ServiceFilter(typeof(RegisterEditUserValidation))]
         [HttpPost("editOrganizer/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostEditOrganizer([FromBody] EditRegisterUserRequest request, string id)
+        public IActionResult PostEditOrganizer([FromBody] EditRegisterUserRequest request, Guid id)
         {
-            return BadRequest();
+            var organizerToEdit = repositoryWrapper.OrganizerRepository.GetById(id);
+
+            if (organizerToEdit == null)          
+                return NotFound("Organizer not found");
+            
+            if (organizerToEdit.Id != this.GetCallingUserIdFromCookie())          
+                return Unauthorized();
+            
+            organizerToEdit.UpdateUser(request);
+            repositoryWrapper.OrganizerRepository.Update(organizerToEdit);
+            repositoryWrapper.Save();
+
+            return Ok();
         }
 
         /// <summary>
-        /// [NYI] Get all clients.
+        /// Get all clients.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        [ServiceFilter(typeof(TakeSkipValidation))]
         [HttpPost("clients")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClients([FromBody] TakeSkipRequest request)
         {
-            return BadRequest();
+            return Ok(repositoryWrapper.ClientRepository
+                .TakeSkip(request.Take, request.Skip)
+                .Select(client => ClientDTO.FromDatabaseUser(client))
+                .ToArray());
         }
 
         /// <summary>
-        /// [NYI] Get all organizers.
+        /// Get all organizers.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        [ServiceFilter(typeof(TakeSkipValidation))]
         [HttpPost("organizers")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizers([FromBody] TakeSkipRequest request)
         {
-            return BadRequest();
+            return Ok(repositoryWrapper.OrganizerRepository
+                .TakeSkip(request.Take, request.Skip)
+                .Select(organizer => OrganizerDTO.FromDatabaseUser(organizer))
+                .ToArray());
         }
 
         /// <summary>
@@ -214,9 +244,10 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostBlockOrganizer(string id)
+        public IActionResult PostBlockOrganizer(Guid id)
         {
-            return BadRequest();
+            // TODO: Jak zrobimy admina
+                return BadRequest();
         }
 
         /// <summary>
@@ -228,8 +259,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostBlockClient(string id)
+        public IActionResult PostBlockClient(Guid id)
         {
+            // TODO: Jak zrobimy admina
             return BadRequest();
         }
 
@@ -238,31 +270,39 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Get methods
 
         /// <summary>
-        /// [NYI] Get details of specified client.
+        /// Get details of specified client.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("clients/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Client))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetClient(string id)
+        public IActionResult GetClient(Guid id)
         {
-            return BadRequest();
+            return repositoryWrapper.ClientRepository.GetById(id) switch
+            {
+                null => NotFound("Client not found"),
+                Client client => Ok(ClientDTO.FromDatabaseUser(client))
+            };
         }
 
         /// <summary>
-        /// [NYI] Get details of specified organizer.
+        /// Get details of specified organizer.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("organizers/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Organizer))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetOrganizer(string id)
+        public IActionResult GetOrganizer(Guid id)
         {
-            return BadRequest();
+            return repositoryWrapper.OrganizerRepository.GetById(id) switch
+            {
+                null => NotFound("Organizer not found"),
+                Organizer organizer => Ok(OrganizerDTO.FromDatabaseUser(organizer))
+            };
         }
 
         #endregion

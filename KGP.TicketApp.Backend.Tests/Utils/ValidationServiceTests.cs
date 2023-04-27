@@ -10,7 +10,7 @@ namespace KGP.TicketApp.Backend.Tests.Utils
 {
     public class ValidationServiceTests
     {
-        private ValidationService validationService;
+        private IValidationService validationService;
 
         [SetUp]
         public void Setup()

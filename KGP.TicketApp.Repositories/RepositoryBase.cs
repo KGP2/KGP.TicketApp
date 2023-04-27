@@ -52,5 +52,10 @@ namespace KGP.TicketApp.Repositories
         {
             return DatabaseContext.Set<T>().Find(id);
         }
+
+        public IQueryable<T> TakeSkip(int take, int skip)
+        {
+            return DatabaseContext.Set<T>().Skip(skip).Take(take);
+        }
     }
 }
