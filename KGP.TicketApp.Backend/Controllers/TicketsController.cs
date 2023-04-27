@@ -66,7 +66,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TicketDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetTicket(string ticketId)
+        public IActionResult GetTicket(Guid ticketId)
         {
             return BadRequest();
         }
