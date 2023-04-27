@@ -1,22 +1,22 @@
-﻿using FluentAssertions;
+﻿using KGP.TicketApp.Backend;
 using KGP.TicketApp.Backend.Options;
-using Microsoft.AspNetCore.Hosting;
+using KGP.TicketApp.Tests.Integration.TestUtilites;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace KGP.TicketApp.Backend.Tests.Services
+namespace KGP.TicketApp.Tests.Integration.Backend.Services
 {
     public class AzureAppConfigurationTests
     {
-        private WebApplicationFactory<Program> webAppFactory;
+        private WebApplicationFactory<Program> application;
         private IOptions<ApplicationOptions>? service;
 
         [SetUp]
         public void Setup()
         {
-            webAppFactory = new WebApplicationFactory<Program>();
-            service = webAppFactory
+            application = ApplicationFactory.GetFullApplication<Program>();
+            service = application
                 .Services
                 .GetService<IOptions<ApplicationOptions>>();
         }
@@ -36,7 +36,7 @@ namespace KGP.TicketApp.Backend.Tests.Services
                 .GetProperties()
                 .Select(prop => prop.GetValue(options))
                 .ToList();
-            
+
             properties.Should().AllSatisfy(prop => prop.Should().NotBeNull());
         }
     }

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KGP.TicketApp.Backend.Tests.Utils
+namespace KGP.TicketApp.Tests.Unit.Utils
 {
     public class HashAlgorithmTests
     {

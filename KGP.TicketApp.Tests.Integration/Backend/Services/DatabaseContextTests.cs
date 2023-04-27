@@ -1,21 +1,24 @@
 ﻿using FluentAssertions;
+using KGP.TicketApp.Backend;
 using KGP.TicketApp.Model.Database;
+using KGP.TicketApp.Tests.Integration.TestUtilites;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace KGP.TicketApp.Backend.Tests.Services
+namespace KGP.TicketApp.Tests.Integration.Backend.Services
 {
     public class DatabaseContextTests
     {
+        private WebApplicationFactory<Program> application;
         private DatabaseContext? databaseContext;
         private IServiceScope? scope;
 
         [SetUp]
         public void Setup()
         {
-            var webAppFactory = new WebApplicationFactory<Program>();
-            scope = webAppFactory.Services.CreateScope();
+            application = ApplicationFactory.GetFullApplication<Program>();
+            scope = application.Services.CreateScope();
             databaseContext = scope?.ServiceProvider.GetRequiredService<DatabaseContext>();
         }
 
