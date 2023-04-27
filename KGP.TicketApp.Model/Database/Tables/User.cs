@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KGP.TicketApp.Model.Database.Tables
 {
+    [Index(nameof(Email), IsUnique = true)]
     public abstract record User
     {
         public Guid Id { get; set; }
