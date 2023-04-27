@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KGP.TicketAPP.Utils.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,12 +47,13 @@ namespace KGP.TicketAPP.Utils.Validation
                 ret = false;
             }
 
-           if (!hasSymbols.IsMatch(input))
+            if (!hasSymbols.IsMatch(input))
             {
                 stringBuilder.AppendLine("Password should contain At least one special case characters");
                 ret = false;
             }
 
+            stringBuilder.TrimEnd();
             error = stringBuilder.ToString();
 
             return ret;
