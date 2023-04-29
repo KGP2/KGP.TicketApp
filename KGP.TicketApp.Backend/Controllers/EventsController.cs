@@ -125,7 +125,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEvents([FromBody] GetEventsRequest request)
         {
-            return Ok(eventRepository.GetByFilterFromRequest(request));
+            return Ok(eventRepository
+                .GetByFilterFromRequest(request)
+                .Select(e => EventDTO.FromDatabaseEvent(e)));
         }
 
         /// <summary>
@@ -153,6 +155,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <returns></returns> 
         [Route("/eventsByOrganizer/{organizerId}")]
         [HttpGet()]
+        [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsByOrganizer(Guid organizerId)

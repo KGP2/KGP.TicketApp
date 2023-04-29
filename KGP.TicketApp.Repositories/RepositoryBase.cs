@@ -23,37 +23,37 @@ namespace KGP.TicketApp.Repositories
         public RepositoryBase(DatabaseContext context) => DatabaseContext = context;
 
         #endregion
-        public void Create(T entity)
+        public virtual void Create(T entity)
         {
             DatabaseContext.Set<T>().Add(entity);
         }
 
-        public void Delete(T entity)
+        public virtual void Delete(T entity)
         {
             DatabaseContext.Set<T>().Remove(entity);
         }
 
-        public IQueryable<T> FindAll()
+        public virtual IQueryable<T> FindAll()
         {
             return DatabaseContext.Set<T>().AsNoTracking();
         }
 
-        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
+        public virtual IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
             return DatabaseContext.Set<T>().Where(expression).AsNoTracking();
         }
 
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             DatabaseContext.Set<T>().Update(entity);
         }
 
-        public T? GetById(Guid id)
+        public virtual T? GetById(Guid id)
         {
             return DatabaseContext.Set<T>().Find(id);
         }
 
-        public IQueryable<T> TakeSkip(int take, int skip)
+        public virtual IQueryable<T> TakeSkip(int take, int skip)
         {
             return DatabaseContext.Set<T>().Skip(skip).Take(take);
         }

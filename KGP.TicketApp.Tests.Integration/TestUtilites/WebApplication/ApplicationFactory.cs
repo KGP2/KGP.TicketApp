@@ -1,10 +1,7 @@
-﻿using KGP.TicketApp.Model.Database;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace KGP.TicketApp.Tests.Integration.TestUtilites
+namespace KGP.TicketApp.Tests.Integration.TestUtilites.WebApplication
 {
     public static class ApplicationFactory
     {
@@ -13,7 +10,7 @@ namespace KGP.TicketApp.Tests.Integration.TestUtilites
             return new WebApplicationFactory<TProgram>();
         }
 
-        public static WebApplicationFactory<TProgram> GetApplicationWithMockDatabase<TProgram, TDbContext>()
+        public static WebApplicationFactoryWithMockDatabase<TProgram, TDbContext> GetApplicationWithMockDatabase<TProgram, TDbContext>()
             where TProgram : class
             where TDbContext : DbContext
         {

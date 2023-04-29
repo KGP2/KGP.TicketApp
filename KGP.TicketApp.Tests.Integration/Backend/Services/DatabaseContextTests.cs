@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using KGP.TicketApp.Backend;
 using KGP.TicketApp.Model.Database;
-using KGP.TicketApp.Tests.Integration.TestUtilites;
+using KGP.TicketApp.Tests.Integration.TestUtilites.WebApplication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

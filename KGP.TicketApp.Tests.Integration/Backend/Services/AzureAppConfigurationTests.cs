@@ -1,6 +1,6 @@
 ﻿using KGP.TicketApp.Backend;
 using KGP.TicketApp.Backend.Options;
-using KGP.TicketApp.Tests.Integration.TestUtilites;
+using KGP.TicketApp.Tests.Integration.TestUtilites.WebApplication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
