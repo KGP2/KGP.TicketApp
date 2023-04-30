@@ -151,7 +151,6 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        [Ignore("Authentication doesn't work fully yet")]
         public async Task PostEvent_Authorized_ShouldReturnSuccess()
         {
             await SignInAsOrganizer(organizerEmail, organizerPassword);
