@@ -11,6 +11,7 @@ using NUnit.Framework;
 using KGP.TicketApp.Tests.Integration.TestUtilites.Http;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
 using System.Net;
+using KGP.TicketApp.Model.Database;
 
 namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
 {
@@ -27,7 +28,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         private string clientEmail = null!;
         private string clientPassword = null!;
 
-        protected override void AddInitialData()
+        protected override void AddInitialData(DatabaseContext databaseContext)
         {
             organizerId = Guid.NewGuid();
             organizerEmail = "organizer@company.com";
@@ -42,7 +43,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 Email = organizerEmail,
                 Password = new BCryptAlgorithm().Hash(organizerPassword),
             };
-            DatabaseContext.Add(organizer);
+            databaseContext.Add(organizer);
 
             clientId = Guid.NewGuid();
             clientEmail = "client@company.com";
@@ -56,7 +57,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 Password = new BCryptAlgorithm().Hash(clientPassword),
                 DateOfBirth = DateTime.Today.AddYears(-20),
             };
-            DatabaseContext.Add(client);
+            databaseContext.Add(client);
 
             var location = new Location
             {
@@ -69,7 +70,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
 
             eventId = Guid.NewGuid();
 
-            DatabaseContext.Add(new Event
+            databaseContext.Add(new Event
             {
                 Id = eventId,
                 Name = "a",
@@ -81,7 +82,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 Place = location,
                 Price = "2137"
             });
-            DatabaseContext.SaveChanges();
+            databaseContext.SaveChanges();
         }
 
         [Test]
@@ -103,7 +104,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        public async Task GetEvent_Existing_ShouldReturnEvent()
+        public async Task Existing_ShouldSuccessfullyReturnMatchingEvent()
         {
             var response = await HttpClient.GetAsync($"events/{eventId}");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -113,7 +114,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        public async Task GetEvent_NotExisting_ShouldReturnNotFound()
+        public async Task NotExisting_ShouldReturnNotFound()
         {
             // Guid.NewGuid() is almost surely not present in database yet
             var response = await HttpClient.GetAsync($"events/{Guid.NewGuid()}");

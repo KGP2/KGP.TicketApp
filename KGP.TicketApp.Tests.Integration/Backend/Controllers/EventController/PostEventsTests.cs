@@ -5,6 +5,7 @@ using KGP.TicketApp.Tests.Integration.TestUtilites.Http;
 using KGP.TicketApp.Model.Database.Tables;
 using System.Net;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
 {
@@ -21,7 +22,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         private string clientEmail = null!;
         private string clientPassword = null!;
 
-        protected override void AddInitialData()
+        protected override void AddInitialData(DatabaseContext databaseContext)
         {
             organizerId = Guid.NewGuid();
             organizerEmail = "organizer@company.com";
@@ -36,7 +37,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 Email = organizerEmail,
                 Password = new BCryptAlgorithm().Hash(organizerPassword),
             };
-            DatabaseContext.Add(organizer);
+            databaseContext.Add(organizer);
 
             clientId = Guid.NewGuid();
             clientEmail = "client@company.com";
@@ -50,7 +51,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 Password = new BCryptAlgorithm().Hash(clientPassword),
                 DateOfBirth = DateTime.Today.AddYears(-20),
             };
-            DatabaseContext.Add(client);
+            databaseContext.Add(client);
 
             var location = new Location
             {
@@ -63,7 +64,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
 
             eventId = Guid.NewGuid();
 
-            DatabaseContext.Add(new Event
+            databaseContext.Add(new Event
             {
                 Id = eventId,
                 Name = "a",
@@ -75,43 +76,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 Place = location,
                 Price = "2137"
             });
-            DatabaseContext.SaveChanges();
-        }
-
-        [Test]
-        public async Task GetEvents_WithEmptyRequest_ShouldReturnAllEvents()
-        {
-            var request = RequestFactory.RequestMessageWithBody("events", HttpMethod.Get, new GetEventsRequest
-            {
-                DateFrom = null,
-                DateTo = null,
-                IsFull = null,
-                Place = null
-            });
-
-            var response = await HttpClient.SendAsync(request);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var result = await response.GetContent<EventDTO[]>();
-            result.Should().HaveCount(1);
-        }
-
-        [Test]
-        public async Task GetEvent_Existing_ShouldReturnEvent()
-        {
-            var response = await HttpClient.GetAsync($"events/{eventId}");
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var result = await response.GetContent<EventDTO>();
-            result?.Id.Should().Be(eventId.ToString());
-        }
-
-        [Test]
-        public async Task GetEvent_NotExisting_ShouldReturnNotFound()
-        {
-            // Guid.NewGuid() is almost surely not present in database yet
-            var response = await HttpClient.GetAsync($"events/{Guid.NewGuid()}");
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            databaseContext.SaveChanges();
         }
 
         private CreateEventRequest GetCreateEventRequest()
@@ -131,7 +96,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        public async Task PostEvent_Unauthenticated_ShouldReturnUnauthorized()
+        public async Task Unauthenticated_ShouldReturnUnauthorized()
         {
             var request = RequestFactory.RequestMessageWithBody("events", HttpMethod.Post, GetCreateEventRequest());
 
@@ -140,7 +105,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        public async Task PostEvent_Unauthorized_ShouldReturnUnauthorized()
+        public async Task Unauthorized_ShouldReturnUnauthorized()
         {
             await SignInAsClient(clientEmail, clientPassword);
 
@@ -151,7 +116,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        public async Task PostEvent_Authorized_ShouldReturnSuccess()
+        public async Task Authorized_ShouldSuccessfullyCreateEvent()
         {
             await SignInAsOrganizer(organizerEmail, organizerPassword);
 
@@ -159,6 +124,10 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
 
             var response = await HttpClient.SendAsync(request);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            using var scope = GetNewScope();
+            using var context = scope.ServiceProvider.GetService<DatabaseContext>()!;
+            context.Set<Event>().Count().Should().Be(2);
         }
     }
 }

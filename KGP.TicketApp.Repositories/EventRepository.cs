@@ -3,11 +3,6 @@ using KGP.TicketApp.Model.Database;
 using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketApp.Model.Requests.Events;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KGP.TicketApp.Repositories
 {
@@ -22,6 +17,22 @@ namespace KGP.TicketApp.Repositories
             return DatabaseContext.Set<Event>()
                 .Include(e => e.Organizer)
                 .FirstOrDefault(e => e.Id == id);
+        }
+
+        public override void Create(Event entity)
+        {
+            var organizer = DatabaseContext.Set<Organizer>().Find(entity.Organizer.Id)!;
+
+            if (organizer.Events == null)
+            {
+                organizer.Events = new() { entity };
+            }
+            else
+            {
+                organizer.Events.Add(entity);
+            }
+
+            DatabaseContext.Set<Organizer>().Update(organizer);
         }
 
         public List<Event> GetByIdList(IEnumerable<Guid> ids)

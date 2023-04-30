@@ -45,7 +45,14 @@ namespace KGP.TicketApp.Backend.Controllers
             {
                 Name = request.Name,
                 Date = request.Date,
-                Place = new Location(), // TODO: Fix when documentation updates
+                Place = new Location
+                {
+                    City = "TODO",
+                    BuildingName = "TODO",
+                    PostalCode = "TODO",
+                    StreetName = "TODO",
+                    StreetNumber = "TODO"
+                }, // TODO: Fix when documentation updates
                 Organizer = new Organizer { Id = this.GetCallingUserIdFromCookie() },
                 Price = request.Price.ToString(), // TODO: Fix when documentation updates
                 TicketSaleStartDate = request.SaleStartDate,

@@ -15,26 +15,24 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers
 {
     public abstract class BaseControllerTests
     {
-        protected WebApplicationFactory<Program> Application;
-        protected DatabaseContext DatabaseContext;
-        protected IServiceScope? Scope;
-        protected HttpClient HttpClient;
+        protected WebApplicationFactory<Program> Application = null!;
+        protected HttpClient HttpClient = null!;
 
         [SetUp]
         public void Setup()
         {
             Application = ApplicationFactory.GetApplicationWithMockDatabase<Program, DatabaseContext>();
-            Scope = Application.Services.CreateScope();
             HttpClient = Application.CreateClient();
-            DatabaseContext = Scope?.ServiceProvider.GetRequiredService<DatabaseContext>()!;
+            using var scope = Application.Services.CreateScope();
+            using var databaseContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>()!;
 
-            DatabaseContext.Database.EnsureDeleted();
-            DatabaseContext.Database.EnsureCreated();
+            databaseContext.Database.EnsureDeleted();
+            databaseContext.Database.EnsureCreated();
 
-            AddInitialData();
+            AddInitialData(databaseContext);
         }
 
-        protected abstract void AddInitialData();
+        protected abstract void AddInitialData(DatabaseContext databaseContext);
 
         protected async Task SignInAsOrganizer(string email, string password)
         {
@@ -60,10 +58,14 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", values!.First().Replace("Token=", "").Replace(@"; path=/", ""));
         }
 
+        protected IServiceScope GetNewScope()
+        {
+            return Application.Services.CreateScope();
+        }
+
         [TearDown]
         public void TearDown()
         {
-            Scope?.Dispose();
         }
     }
 }
