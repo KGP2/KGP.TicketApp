@@ -8,5 +8,6 @@ namespace KGP.TicketApp.Utils.PdfGenerator
 {
     public interface IPdfGeneratorInitData
     {
+        void Init(IPdfGenerator<IPdfGeneratorInitData> generator);
     }
 }
