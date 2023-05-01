@@ -9,10 +9,14 @@ using System.Threading.Tasks;
 
 namespace KGP.TicketApp.Utils.PdfGenerator.TicketGenerator
 {
-    public class TicketGenerator : IPdfGenerator<TicketGeneratorInitData>
+    public class TicketGenerator : PdfGenerator, IPdfGenerator<TicketGeneratorInitData>
     {
         #region Fields
         private ClientDTO client;
+        #endregion
+
+        #region Properties
+        public ClientDTO Client { get; set; }
         #endregion
 
         #region Interface methods
@@ -23,12 +27,12 @@ namespace KGP.TicketApp.Utils.PdfGenerator.TicketGenerator
 
         public void InitData(TicketGeneratorInitData initData)
         {
-           this.client = initData.client;
+           base.InitData(initData);
         }
 
-        public void Save(Action<Document> saveFun)
+        public void Save(Action<byte[]> saveFun)
         {
-            throw new NotImplementedException();
+            base.Save(saveFun);
         }
 
         #endregion

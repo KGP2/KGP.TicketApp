@@ -12,6 +12,6 @@ namespace KGP.TicketApp.Utils.PdfGenerator
     {
         void InitData(T initData);
         void Generate();
-        void Save(Action<Document> saveFun);
+        void Save(Action<byte[]> saveFun);
     }
 }
