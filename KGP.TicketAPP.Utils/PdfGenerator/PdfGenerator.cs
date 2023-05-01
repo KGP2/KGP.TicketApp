@@ -12,16 +12,15 @@ namespace KGP.TicketApp.Utils.PdfGenerator
     public abstract class PdfGenerator : IPdfGenerator<IPdfGeneratorInitData>, IDisposable
     {
         #region Fields
-        private PdfWriter pdfWriter;
-        private PdfDocument pdfDocument;
-        private Document document;
-        private MemoryStream stream;
+        protected PdfWriter pdfWriter;
+        protected PdfDocument pdfDocument;
+        protected Document document;
+        protected MemoryStream stream;
         #endregion
 
         #region Interface methods
         public void Dispose()
         {
-            document.Close();
             pdfDocument.Close();
             pdfWriter.Close();
             stream.Close();
@@ -42,6 +41,7 @@ namespace KGP.TicketApp.Utils.PdfGenerator
 
         public void Save(Action<byte[]> saveFun)
         {
+            document.Close();
             saveFun(stream.ToArray());
         }
 

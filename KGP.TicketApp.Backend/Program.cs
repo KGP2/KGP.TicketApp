@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using KGP.TicketApp.Backend.Helpers;
 using KGP.TicketApp.Backend.Validation;
+using KGP.TicketApp.Utils.PdfGenerator;
 
 namespace KGP.TicketApp.Backend
 {
@@ -85,6 +86,7 @@ namespace KGP.TicketApp.Backend
             builder.Services.AddScoped<IValidationService, ValidationService>();
             builder.Services.AddScoped<RegisterEditUserValidation>();
             builder.Services.AddScoped<TakeSkipValidation>();
+            builder.Services.AddScoped<PdfGeneratorService>();
             builder.Services.AddSwaggerGen(options =>
             {
                 var basePath = AppContext.BaseDirectory;
