@@ -72,7 +72,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostEditEvent([FromBody] EditEventRequest request, [FromQuery] Guid id)
+        public IActionResult PostEditEvent([FromBody] EditEventRequest request, [FromRoute] Guid id)
         {
             var eventToEdit = eventRepository.GetById(id);
 
@@ -130,7 +130,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetEvents([FromBody] GetEventsRequest request)
+        public IActionResult GetEvents([FromQuery] GetEventsRequest request)
         {
             return Ok(eventRepository
                 .GetByFilterFromRequest(request)
@@ -167,7 +167,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsByOrganizer(Guid organizerId)
         {
-            return Ok(eventRepository.GetByOrganizerId(organizerId));
+            return Ok(eventRepository
+                .GetByOrganizerId(organizerId)
+                .Select(e => EventDTO.FromDatabaseEvent(e)));
         }
 
         /// <summary>
@@ -182,7 +184,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsList([FromBody] Guid[] ids)
         {
-            return Ok(eventRepository.GetByIdList(ids));
+            return Ok(eventRepository
+                .GetByIdList(ids)
+                .Select(e => EventDTO.FromDatabaseEvent(e)));
         }
 
         #endregion
@@ -199,7 +203,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteEvent(Guid id)
+        public IActionResult DeleteEvent([FromRoute] Guid id)
         {
             var @event = eventRepository.GetById(id);
 

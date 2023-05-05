@@ -1,16 +1,13 @@
-﻿using KGP.TicketApp.Model.Database;
-using KGP.TicketApp.Model.Requests.Events;
-using KGP.TicketApp.Model.DTOs;
-using KGP.TicketApp.Tests.Integration.TestUtilites.Http;
-using KGP.TicketApp.Model.Database.Tables;
-using System.Net;
+﻿using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketAPP.Utils.Helpers.HashAlgorithms;
+using System.Net;
+using KGP.TicketApp.Model.Database;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
 {
     [TestFixture]
-    public class PostEventsTests : BaseControllerTests
+    public class DeleteEventsTests : BaseControllerTests
     {
         private Guid eventId;
 
@@ -74,87 +71,57 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 TicketSaleStartDate = DateTime.Today.AddDays(-1),
                 Organizer = organizer,
                 Place = location,
-                Price = "2137"
+                Price = "2137",
             });
             databaseContext.SaveChanges();
         }
-
-        private CreateEventRequest GetCreateEventRequest()
-        {
-            return new CreateEventRequest
-            {
-                Name = "a",
-                OrganizerId = organizerId,
-                Date = DateTime.UtcNow,
-                ParticipiantsLimit = 10,
-                Photo = "", // TODO
-                Place = "", // TODO
-                Price = 100.21M,
-                SaleStartDate = DateTime.Today.AddDays(-1),
-                SaleEndTime = DateTime.Today.AddDays(1)
-            };
-        }
-
-        private EditEventRequest GetEditEventRequest()
-        {
-            return new EditEventRequest
-            {
-                ParticipiantsLimit = 50
-            };
-        }
-
         [Test]
-        public async Task Create_Unauthenticated_ShouldReturnUnauthorized()
-        {
-            var request = RequestFactory.RequestMessageWithBody("events", HttpMethod.Post, GetCreateEventRequest());
-
-            var response = await HttpClient.SendAsync(request);
+        public async Task Delete_Unauthenticated_ShouldReturnUnauthorized()
+        {   
+            var response = await HttpClient.DeleteAsync($"events/{eventId}");
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Test]
-        public async Task Create_Unauthorized_ShouldReturnUnauthorized()
-        {
-            await SignInAsClient(clientEmail, clientPassword);
-
-            var request = RequestFactory.RequestMessageWithBody("events", HttpMethod.Post, GetCreateEventRequest());
-
-            var response = await HttpClient.SendAsync(request);
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Test]
-        public async Task Create_Authorized_ShouldSuccessfullyCreateEvent()
-        {
-            await SignInAsOrganizer(organizerEmail, organizerPassword);
-
-            var request = RequestFactory.RequestMessageWithBody("events", HttpMethod.Post, GetCreateEventRequest());
-
-            var response = await HttpClient.SendAsync(request);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            using var scope = GetNewScope();
-            using var context = scope.ServiceProvider.GetService<DatabaseContext>()!;
-            context.Set<Event>().Count().Should().Be(2);
-        }
-
-        [Test]
-        public async Task Edit_Authorized_ShouldSuccessfullyEditEvent()
-        {
-            await SignInAsOrganizer(organizerEmail, organizerPassword);
-
-            var request = RequestFactory.RequestMessageWithBody($"events/{eventId}", HttpMethod.Post, GetEditEventRequest());
-
-            var response = await HttpClient.SendAsync(request);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             using var scope = GetNewScope();
             using var context = scope.ServiceProvider.GetService<DatabaseContext>()!;
             context.Set<Event>().Count().Should().Be(1);
-
-            var @event = context.Set<Event>().Find(eventId)!;
-            @event.ParticipantsLimit.Should().Be(50);
-            @event.Name.Should().Be("a");
         }
+
+        [Test]
+        public async Task Delete_Unauthorized_ShouldReturnUnauthorized()
+        {
+            var response = await HttpClient.DeleteAsync($"events/{eventId}");
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+            using var scope = GetNewScope();
+            using var context = scope.ServiceProvider.GetService<DatabaseContext>()!;
+            context.Set<Event>().Count().Should().Be(1);
+        }
+
+        [Test]
+        public async Task Delete_Authorized_ShouldSuccessfullyCreateEvent()
+        {
+            await SignInAsOrganizer(organizerEmail, organizerPassword);
+
+            var response = await HttpClient.DeleteAsync($"events/{eventId}");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            using var scope = GetNewScope();
+            using var context = scope.ServiceProvider.GetService<DatabaseContext>()!;
+            context.Set<Event>().Count().Should().Be(0);
+        }
+
+        [Test]
+        public async Task Delete_NotExisting_ShouldReturnNotFound()
+        {
+            await SignInAsOrganizer(organizerEmail, organizerPassword);
+
+            var response = await HttpClient.DeleteAsync($"events/{Guid.NewGuid()}");
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            using var scope = GetNewScope();
+            using var context = scope.ServiceProvider.GetService<DatabaseContext>()!;
+            context.Set<Event>().Count().Should().Be(1);
+        }
+
     }
 }

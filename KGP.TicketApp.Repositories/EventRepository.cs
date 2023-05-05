@@ -37,14 +37,18 @@ namespace KGP.TicketApp.Repositories
 
         public List<Event> GetByIdList(IEnumerable<Guid> ids)
         {
-            return DatabaseContext.Set<Event>()
+            return DatabaseContext
+                .Set<Event>()
+                .Include(e => e.Organizer)
                 .Where(e => ids.Contains(e.Id))
                 .ToList();
         }
 
         public List<Event> GetByOrganizerId(Guid id)
         {
-            return DatabaseContext.Set<Event>()
+            return DatabaseContext
+                .Set<Event>()
+                .Include(e => e.Organizer)
                 .Where(e => e.Organizer.Id == id)
                 .ToList();
         }

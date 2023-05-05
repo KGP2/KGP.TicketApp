@@ -80,23 +80,15 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 TicketSaleStartDate = DateTime.Today.AddDays(-1),
                 Organizer = organizer,
                 Place = location,
-                Price = "2137"
+                Price = "2137",
             });
             databaseContext.SaveChanges();
         }
 
         [Test]
-        public async Task WithEmptyRequest_ShouldReturnAllEvents()
+        public async Task GetAll_WithEmptyRequest_ShouldReturnAllEvents()
         {
-            var request = RequestFactory.RequestMessageWithBody("events", HttpMethod.Get, new GetEventsRequest
-            {
-                DateFrom = null,
-                DateTo = null,
-                IsFull = null,
-                Place = null
-            });
-
-            var response = await HttpClient.SendAsync(request);
+            var response = await HttpClient.GetAsync("events");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var result = await response.GetContent<EventDTO[]>();
@@ -104,7 +96,39 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        public async Task Existing_ShouldSuccessfullyReturnMatchingEvent()
+        public async Task GetAll_WithQueryString_ShouldFilter()
+        {
+            // IsFull=False
+            var response = await HttpClient.GetAsync("events?IsFull=False");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(1);
+
+            // IsFull=True
+            response = await HttpClient.GetAsync("events?IsFull=True");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(0);
+
+            // DateFrom=2023-01-01&IsFull=False
+            response = await HttpClient.GetAsync("events?DateFrom=2023-01-01&IsFull=False");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(1);
+
+            // DateTo=2023-01-01&IsFull=False
+            response = await HttpClient.GetAsync("events?DateTo=2023-01-01&IsFull=False");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(0);
+        }
+
+        [Test]
+        public async Task GetOne_Existing_ShouldSuccessfullyReturnMatchingEvent()
         {
             var response = await HttpClient.GetAsync($"events/{eventId}");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -114,11 +138,69 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
         }
 
         [Test]
-        public async Task NotExisting_ShouldReturnNotFound()
+        public async Task GetOne_NotExisting_ShouldReturnNotFound()
         {
             // Guid.NewGuid() is almost surely not present in database yet
             var response = await HttpClient.GetAsync($"events/{Guid.NewGuid()}");
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task GetByOrganier_NotExistingOrganizer_ShouldReturnEmptyList()
+        {
+            // Guid.NewGuid() is almost surely not present in database yet
+            var response = await HttpClient.GetAsync($"eventsByOrganizer/{Guid.NewGuid()}");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(0);
+        }
+
+        [Test]
+        public async Task GetByOrganier_ExistingOrganizer_ShouldReturnEvents()
+        {
+            // Guid.NewGuid() is almost surely not present in database yet
+            var response = await HttpClient.GetAsync($"eventsByOrganizer/{organizerId}");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(1);
+        }
+
+        [Test]
+        public async Task GetList_AllNotExisting_ShouldReturnEmptyList()
+        {
+            // Guid.NewGuid() is almost surely not present in database yet
+            var request = RequestFactory.RequestMessageWithBody("eventList", HttpMethod.Get, new Guid[]
+            {
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+            });
+
+            var response = await HttpClient.SendAsync(request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(0);
+        }
+
+        [Test]
+        public async Task GetList_SomeExisting_ShouldReturnListForThoseExisting()
+        {
+            // Guid.NewGuid() is almost surely not present in database yet
+            var request = RequestFactory.RequestMessageWithBody("eventList", HttpMethod.Get, new Guid[]
+            {
+                Guid.NewGuid(),
+                eventId,
+                Guid.NewGuid(),
+            });
+
+            var response = await HttpClient.SendAsync(request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.GetContent<EventDTO[]>();
+            result.Should().HaveCount(1);
         }
     }
 }
