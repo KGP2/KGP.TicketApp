@@ -45,7 +45,14 @@ namespace KGP.TicketApp.Backend.Controllers
             {
                 Name = request.Name,
                 Date = request.Date,
-                Place = new Location(), // TODO: Fix when documentation updates
+                Place = new Location
+                {
+                    City = "TODO",
+                    BuildingName = "TODO",
+                    PostalCode = "TODO",
+                    StreetName = "TODO",
+                    StreetNumber = "TODO"
+                }, // TODO: Fix when documentation updates
                 Organizer = new Organizer { Id = this.GetCallingUserIdFromCookie() },
                 Price = request.Price.ToString(), // TODO: Fix when documentation updates
                 TicketSaleStartDate = request.SaleStartDate,
@@ -65,7 +72,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostEditEvent([FromBody] EditEventRequest request, [FromQuery] Guid id)
+        public IActionResult PostEditEvent([FromBody] EditEventRequest request, [FromRoute] Guid id)
         {
             var eventToEdit = eventRepository.GetById(id);
 
@@ -123,9 +130,11 @@ namespace KGP.TicketApp.Backend.Controllers
         [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetEvents([FromBody] GetEventsRequest request)
+        public IActionResult GetEvents([FromQuery] GetEventsRequest request)
         {
-            return Ok(eventRepository.GetByFilterFromRequest(request));
+            return Ok(eventRepository
+                .GetByFilterFromRequest(request)
+                .Select(e => EventDTO.FromDatabaseEvent(e)));
         }
 
         /// <summary>
@@ -153,11 +162,14 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <returns></returns> 
         [Route("/eventsByOrganizer/{organizerId}")]
         [HttpGet()]
+        [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsByOrganizer(Guid organizerId)
         {
-            return Ok(eventRepository.GetByOrganizerId(organizerId));
+            return Ok(eventRepository
+                .GetByOrganizerId(organizerId)
+                .Select(e => EventDTO.FromDatabaseEvent(e)));
         }
 
         /// <summary>
@@ -172,7 +184,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetEventsList([FromBody] Guid[] ids)
         {
-            return Ok(eventRepository.GetByIdList(ids));
+            return Ok(eventRepository
+                .GetByIdList(ids)
+                .Select(e => EventDTO.FromDatabaseEvent(e)));
         }
 
         #endregion
@@ -189,7 +203,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteEvent(Guid id)
+        public IActionResult DeleteEvent([FromRoute] Guid id)
         {
             var @event = eventRepository.GetById(id);
 
