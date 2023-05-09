@@ -1,4 +1,5 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,8 +16,10 @@ namespace KGP.TicketApp.Backend.Helpers
         #endregion
 
         #region Public methods
-        public static string CreateToken(string email, string id, string key, string issuer, Types userType)
+        public static (string token, CookieOptions options) CreateToken(string email, string id, string key, string issuer, Types userType, string host)
         {
+            var expDate = DateTime.UtcNow.AddHours(12);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -27,7 +30,7 @@ namespace KGP.TicketApp.Backend.Helpers
                     new Claim(JwtRegisteredClaimNames.Jti,
                     Guid.NewGuid().ToString())
                 }),
-                Expires = DateTime.UtcNow.AddHours(12),
+                Expires = expDate,
                 Issuer = issuer,
                 Audience = $"{id};{userType}",
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)), SecurityAlgorithms.HmacSha512Signature)
@@ -36,8 +39,14 @@ namespace KGP.TicketApp.Backend.Helpers
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var stringToken = tokenHandler.WriteToken(token);
+            var options = new CookieOptions()
+            {
+                Expires = expDate,
+            };
+            if (host == "localhost")
+                options.Domain = null;
 
-            return stringToken;
+            return (stringToken, options);
         }
 
         public static bool IsIdValid(this string JwtToken, string hashedId)
