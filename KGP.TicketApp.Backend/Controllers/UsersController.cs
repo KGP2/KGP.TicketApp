@@ -61,7 +61,8 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Cookies.Append("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client));
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client, Request.Host.Host);
+            Response.Cookies.Append("Token", token.token, token.options);
 
             return Ok(ClientDTO.FromDatabaseUser(user));
         }
@@ -84,7 +85,8 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Cookies.Append("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer));
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer, Request.Host.Host);
+            Response.Cookies.Append("Token", token.token, token.options);
 
             return Ok(OrganizerDTO.FromDatabaseUser(user));
         }
