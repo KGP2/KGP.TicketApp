@@ -8,7 +8,7 @@ using Document = iText.Layout.Document;
 
 namespace KGP.TicketApp.Utils.PdfGenerator
 {
-    public interface IPdfGenerator<T> where T : IPdfGeneratorInitData
+    public interface IPdfGenerator<T> where T : IPdfGeneratorInitData<T>
     {
         void InitData(T initData);
         void Generate();

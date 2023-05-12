@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace KGP.TicketApp.Utils.PdfGenerator
 {
-    public interface IPdfGeneratorInitData
+    public interface IPdfGeneratorInitData<T> where T : IPdfGeneratorInitData<T>
     {
-        void Init(IPdfGenerator<IPdfGeneratorInitData> generator);
+        void Init(IPdfGenerator<T> generator);
     }
 }
