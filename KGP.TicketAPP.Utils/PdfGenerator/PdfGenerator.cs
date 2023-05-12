@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace KGP.TicketApp.Utils.PdfGenerator
 {
-    public abstract class PdfGenerator<T> : IPdfGenerator<T>, IDisposable where T : IPdfGeneratorInitData<T>
+    public abstract class PdfGenerator : IPdfGenerator<IPdfGeneratorInitData>, IDisposable
     {
         #region Fields
         protected PdfWriter pdfWriter;
@@ -34,7 +34,7 @@ namespace KGP.TicketApp.Utils.PdfGenerator
             document = new Document(pdfDocument);
         }
 
-        public void InitData(T initData)
+        public void InitData(IPdfGeneratorInitData initData)
         {
             initData.Init(this);
         }

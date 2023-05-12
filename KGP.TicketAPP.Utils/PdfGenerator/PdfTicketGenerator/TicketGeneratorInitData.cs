@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KGP.TicketApp.Utils.PdfGenerator.PdfTicketGenerator
 {
-    public class TicketGeneratorInitData : IPdfGeneratorInitData<TicketGeneratorInitData>
+    public class TicketGeneratorInitData : IPdfGeneratorInitData
     {
         #region Fields
         public Ticket ticket;
@@ -16,8 +16,11 @@ namespace KGP.TicketApp.Utils.PdfGenerator.PdfTicketGenerator
 
         #region Interface methods
 
-        public void Init(IPdfGenerator<TicketGeneratorInitData> generator)
+        public void Init(IPdfGenerator<IPdfGeneratorInitData> generator)
         {
+            if (generator.GetType() != typeof(TicketGenerator))
+                throw new ArgumentException("Generator should be type of TicketGenerator.");
+
             var ticketGenerator = generator as TicketGenerator;
 
             ticketGenerator.Ticket = ticket;

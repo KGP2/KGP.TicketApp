@@ -43,8 +43,8 @@ namespace KGP.TicketApp.Backend.Tests.Utils.PdfGenerator
             });
 
             generatorService.TicketGenerator.Generate();
-            generatorService.TicketGenerator.Save(SaveLocally);
             File.Exists(ticketName).Should().BeTrue();
+            generatorService.TicketGenerator.Save(SaveLocally);
         }
 
         [TearDown]
