@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace KGP.TicketApp.Utils.PdfGenerator.PdfTicketGenerator
 {
-    public class TicketGenerator : PdfGenerator, IPdfGenerator<TicketGeneratorInitData>
+    public class TicketGenerator : PdfGenerator<TicketGeneratorInitData>
     {
         #region Fields
         private const int QRCodeSize = 129;
