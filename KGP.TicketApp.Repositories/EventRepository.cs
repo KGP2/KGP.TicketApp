@@ -2,11 +2,7 @@
 using KGP.TicketApp.Model.Database;
 using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketApp.Model.Requests.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace KGP.TicketApp.Repositories
 {
@@ -16,23 +12,53 @@ namespace KGP.TicketApp.Repositories
 
         public EventRepository(DatabaseContext context) : base(context) { }
 
-        public List<Event> GetByIdList(IEnumerable<Guid> ids)
+        public override Event? GetById(Guid id)
         {
             return DatabaseContext.Set<Event>()
+                .Include(e => e.Organizer)
+                .FirstOrDefault(e => e.Id == id);
+        }
+
+        public override void Create(Event entity)
+        {
+            var organizer = DatabaseContext.Set<Organizer>().Find(entity.Organizer.Id)!;
+
+            if (organizer.Events == null)
+            {
+                organizer.Events = new() { entity };
+            }
+            else
+            {
+                organizer.Events.Add(entity);
+            }
+
+            DatabaseContext.Set<Organizer>().Update(organizer);
+        }
+
+        public List<Event> GetByIdList(IEnumerable<Guid> ids)
+        {
+            return DatabaseContext
+                .Set<Event>()
+                .Include(e => e.Organizer)
                 .Where(e => ids.Contains(e.Id))
                 .ToList();
         }
 
         public List<Event> GetByOrganizerId(Guid id)
         {
-            return DatabaseContext.Set<Event>()
+            return DatabaseContext
+                .Set<Event>()
+                .Include(e => e.Organizer)
                 .Where(e => e.Organizer.Id == id)
                 .ToList();
         }
 
         public List<Event> GetByFilterFromRequest(GetEventsRequest request)
         {
-            var query = DatabaseContext.Set<Event>().AsQueryable();
+            var query = DatabaseContext
+                .Set<Event>()
+                .Include(e => e.Organizer)
+                .AsQueryable();
 
             if (request.IsFull.HasValue)
             {
