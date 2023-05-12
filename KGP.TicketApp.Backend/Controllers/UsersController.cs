@@ -14,6 +14,7 @@ using KGP.TicketAPP.Utils.Validation;
 using KGP.TicketApp.Backend.Validation;
 using KGP.TicketApp.Repositories;
 using KGP.TicketAPP.Utils.Extensions;
+using Org.BouncyCastle.Crypto.Tls;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -61,7 +62,8 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Cookies.Append("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client));
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client, Request.Host.Host);
+            Response.Cookies.Append("Token", token.token, token.options);
 
             return Ok(ClientDTO.FromDatabaseUser(user));
         }
@@ -84,7 +86,8 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            Response.Cookies.Append("Token", JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer));
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer, Request.Host.Host);
+            Response.Cookies.Append("Token", token.token, token.options);
 
             return Ok(OrganizerDTO.FromDatabaseUser(user));
         }
@@ -96,7 +99,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <returns></returns>     
         [AllowAnonymous]
-        [ServiceFilter(typeof(RegisterEditUserValidation))]
+        [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Organizer, true })]
         [HttpPost("registerOrganizer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -123,7 +126,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [ServiceFilter(typeof(RegisterEditUserValidation))]
+        [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Client, true })]
         [HttpPost("registerClient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -149,7 +152,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="request"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        [ServiceFilter(typeof(RegisterEditUserValidation))]
+        [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Client, false })]
         [HttpPost("editClient/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Client)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -177,8 +180,8 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <param name="id"></param>
-        /// <returns></returns>    
-        [ServiceFilter(typeof(RegisterEditUserValidation))]
+        /// <returns></returns>
+        [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Organizer, false })]
         [HttpPost("editOrganizer/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]

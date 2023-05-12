@@ -55,7 +55,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers
             var result = await HttpClient.SendAsync(request);
             result.Headers.TryGetValues("Set-Cookie", out var values);
 
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", values!.First().Replace("Token=", "").Replace(@"; path=/", ""));
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", values!.First().Split('=')[1].Split(';').First());
         }
 
         protected IServiceScope GetNewScope()
