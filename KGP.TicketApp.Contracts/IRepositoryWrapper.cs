@@ -11,6 +11,7 @@ namespace KGP.TicketApp.Contracts
         IClientRepository ClientRepository { get; }
         IOrganizerRepository OrganizerRepository { get; }
         IEventRepository EventRepository { get; }
+        ITicketRepository TicketRepository { get; }
 
         void Save();
     }

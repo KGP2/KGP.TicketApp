@@ -16,5 +16,10 @@ namespace KGP.TicketApp.Repositories
         {
         }
         #endregion
+
+        public IQueryable<Ticket> GetTicketsByOwner(Guid ownerId)
+        {
+            return DatabaseContext.Tickets.Where(it => it.Owner.Id == ownerId);
+        }
     }
 }

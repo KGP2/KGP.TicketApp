@@ -9,5 +9,6 @@ namespace KGP.TicketApp.Contracts
 {
     public interface ITicketRepository : IRepositoryBase<Ticket>
     {
+        IQueryable<Ticket> GetTicketsByOwner(Guid ownerId);
     }
 }
