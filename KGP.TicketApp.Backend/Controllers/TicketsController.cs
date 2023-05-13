@@ -1,4 +1,5 @@
-﻿using KGP.TicketApp.Model.DTOs;
+﻿using KGP.TicketApp.Backend.Helpers;
+using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +9,7 @@ namespace KGP.TicketApp.Backend.Controllers
 {
     [Route("tickets")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = $"{JwtTokenHelper.Organizer},{JwtTokenHelper.Client}")]
     public class TicketsController : ControllerBase
     {
         #region Post methods

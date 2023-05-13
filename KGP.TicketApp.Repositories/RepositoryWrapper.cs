@@ -16,6 +16,7 @@ namespace KGP.TicketApp.Repositories
         private IClientRepository? clientRepository;
         private IOrganizerRepository? organizerRepository;
         private IEventRepository? eventRepository;
+        private ITicketRepository ticketRepository;
 
         #endregion
 
@@ -56,6 +57,17 @@ namespace KGP.TicketApp.Repositories
                     eventRepository = new EventRepository(databaseContext);
 
                 return eventRepository;
+            }
+        }
+
+        public ITicketRepository TicketRepository
+        {
+            get
+            {
+                if (ticketRepository == null)
+                    ticketRepository = new TicketRepository(databaseContext);
+
+                return ticketRepository;
             }
         }
 

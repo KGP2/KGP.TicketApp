@@ -153,6 +153,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Client, false })]
+        [ServiceFilter(typeof(TokenValidation))]
         [HttpPost("editClient/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Client)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -164,9 +165,6 @@ namespace KGP.TicketApp.Backend.Controllers
 
             if (clientToEdit == null)
                 return NotFound("Client not found");
-
-            if (clientToEdit.Id != this.GetCallingUserId())
-                return Unauthorized();
 
             clientToEdit.UpdateUser(request);
             repositoryWrapper.ClientRepository.Update(clientToEdit);
@@ -182,6 +180,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Organizer, false })]
+        [ServiceFilter(typeof(TokenValidation))]
         [HttpPost("editOrganizer/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -193,9 +192,6 @@ namespace KGP.TicketApp.Backend.Controllers
 
             if (organizerToEdit == null)          
                 return NotFound("Organizer not found");
-            
-            if (organizerToEdit.Id != this.GetCallingUserId())          
-                return Unauthorized();
             
             organizerToEdit.UpdateUser(request);
             repositoryWrapper.OrganizerRepository.Update(organizerToEdit);
