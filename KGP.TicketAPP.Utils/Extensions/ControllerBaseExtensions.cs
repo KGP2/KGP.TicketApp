@@ -5,14 +5,14 @@ namespace KGP.TicketAPP.Utils.Extensions
 {
     public static class ControllerBaseExtensions
     {
-        public static string GetTokenFromCookie(this ControllerBase controller)
+        public static string GetToken(this ControllerBase controller)
         {
-            return controller.Request.Cookies["Token"] ?? throw new InvalidOperationException("Cookie value \"Token\" not set.");
+            return controller.Request.Headers.Authorization.First().Split(' ')[1];
         }
 
-        public static Guid GetCallingUserIdFromCookie(this ControllerBase controller)
+        public static Guid GetCallingUserId(this ControllerBase controller)
         {
-            var token = controller.GetTokenFromCookie();
+            var token = controller.GetToken();
             return Guid.Parse(JwtTokenHelper.GetIdFromToken(token));
         }
     }

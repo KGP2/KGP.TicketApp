@@ -53,7 +53,7 @@ namespace KGP.TicketApp.Backend.Controllers
                     StreetName = "TODO",
                     StreetNumber = "TODO"
                 }, // TODO: Fix when documentation updates
-                Organizer = new Organizer { Id = this.GetCallingUserIdFromCookie() },
+                Organizer = new Organizer { Id = this.GetCallingUserId() },
                 Price = request.Price.ToString(), // TODO: Fix when documentation updates
                 TicketSaleStartDate = request.SaleStartDate,
                 TicketSaleEndDate = request.SaleStartDate,
@@ -81,7 +81,7 @@ namespace KGP.TicketApp.Backend.Controllers
                 return NotFound(EventNotFound);
             }
 
-            if (eventToEdit.Organizer.Id != this.GetCallingUserIdFromCookie())
+            if (eventToEdit.Organizer.Id != this.GetCallingUserId())
             {
                 return Unauthorized();
             }
@@ -212,7 +212,7 @@ namespace KGP.TicketApp.Backend.Controllers
                 return NotFound(EventNotFound);
             }
 
-            if (@event.Organizer.Id != this.GetCallingUserIdFromCookie())
+            if (@event.Organizer.Id != this.GetCallingUserId())
             {
                 return Unauthorized();
             }
