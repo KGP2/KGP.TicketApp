@@ -69,7 +69,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <returns></returns>  
         [HttpPost("{id}")]
-        [ServiceFilter(typeof(TokenValidation))]
+        [ServiceFilter(typeof(TokenEventValidation))]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -196,7 +196,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [ServiceFilter(typeof(TokenValidation))]
+        [ServiceFilter(typeof(TokenEventValidation))]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

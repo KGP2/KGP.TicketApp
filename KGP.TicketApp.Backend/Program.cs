@@ -86,6 +86,7 @@ namespace KGP.TicketApp.Backend
             builder.Services.AddScoped<IValidationService, ValidationService>();
             builder.Services.AddScoped<TakeSkipValidation>();
             builder.Services.AddScoped<TokenValidation>();
+            builder.Services.AddScoped<TokenEventValidation>();
             builder.Services.AddScoped<PdfGeneratorService>();
             builder.Services.AddSwaggerGen(options =>
             {
