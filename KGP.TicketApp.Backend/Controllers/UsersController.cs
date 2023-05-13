@@ -165,7 +165,7 @@ namespace KGP.TicketApp.Backend.Controllers
             if (clientToEdit == null)
                 return NotFound("Client not found");
 
-            if (clientToEdit.Id != this.GetCallingUserIdFromCookie())
+            if (clientToEdit.Id != this.GetCallingUserId())
                 return Unauthorized();
 
             clientToEdit.UpdateUser(request);
@@ -194,7 +194,7 @@ namespace KGP.TicketApp.Backend.Controllers
             if (organizerToEdit == null)          
                 return NotFound("Organizer not found");
             
-            if (organizerToEdit.Id != this.GetCallingUserIdFromCookie())          
+            if (organizerToEdit.Id != this.GetCallingUserId())          
                 return Unauthorized();
             
             organizerToEdit.UpdateUser(request);
