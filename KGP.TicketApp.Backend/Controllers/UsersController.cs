@@ -62,7 +62,7 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client, Request.Host.Host);
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client, Request.Headers.Origin.FirstOrDefault() ?? "");
             Response.Cookies.Append("Token", token.token, token.options);
 
             return Ok(ClientDTO.FromDatabaseUser(user));
@@ -86,7 +86,7 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer, Request.Host.Host);
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer, Request.Headers.Origin.FirstOrDefault() ?? "");
             Response.Cookies.Append("Token", token.token, token.options);
 
             return Ok(OrganizerDTO.FromDatabaseUser(user));
@@ -191,12 +191,12 @@ namespace KGP.TicketApp.Backend.Controllers
         {
             var organizerToEdit = repositoryWrapper.OrganizerRepository.GetById(id);
 
-            if (organizerToEdit == null)          
+            if (organizerToEdit == null)
                 return NotFound("Organizer not found");
-            
-            if (organizerToEdit.Id != this.GetCallingUserId())          
+
+            if (organizerToEdit.Id != this.GetCallingUserId())
                 return Unauthorized();
-            
+
             organizerToEdit.UpdateUser(request);
             repositoryWrapper.OrganizerRepository.Update(organizerToEdit);
             repositoryWrapper.Save();
@@ -250,7 +250,7 @@ namespace KGP.TicketApp.Backend.Controllers
         public IActionResult PostBlockOrganizer(Guid id)
         {
             // TODO: Jak zrobimy admina
-                return BadRequest();
+            return BadRequest();
         }
 
         /// <summary>
