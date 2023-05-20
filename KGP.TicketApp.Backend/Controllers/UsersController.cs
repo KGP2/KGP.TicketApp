@@ -52,7 +52,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("clients/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO<ClientDTO>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClientsLogin([FromBody] LoginCredentialsRequest request)
         {
@@ -62,10 +62,15 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client, Request.Headers.Origin.FirstOrDefault() ?? "");
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client, Request.Host.Host);
             Response.Cookies.Append("Token", token.token, token.options);
 
-            return Ok(ClientDTO.FromDatabaseUser(user));
+            return Ok(new LoginDTO<ClientDTO>
+            {
+                Token = token.token,
+                ExpiresAt = token.options.Expires?.DateTime,
+                User = ClientDTO.FromDatabaseUser(user)
+            });
         }
 
         // POST users/organizers/login
@@ -76,7 +81,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <returns></returns>      
         [AllowAnonymous]
         [HttpPost("organizers/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO<OrganizerDTO>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizersLogin([FromBody] LoginCredentialsRequest request)
         {
@@ -86,10 +91,15 @@ namespace KGP.TicketApp.Backend.Controllers
             if (!hashAlgorithm.Verify(request.Password, user.Password))
                 return BadRequest("Password is incorrect");
 
-            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer, Request.Headers.Origin.FirstOrDefault() ?? "");
+            var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer, Request.Host.Host);
             Response.Cookies.Append("Token", token.token, token.options);
 
-            return Ok(OrganizerDTO.FromDatabaseUser(user));
+            return Ok(new LoginDTO<OrganizerDTO>
+            {
+                Token = token.token,
+                ExpiresAt = token.options.Expires?.DateTime,
+                User = OrganizerDTO.FromDatabaseUser(user)
+            });
         }
 
         // POST users/registerOrganizer
