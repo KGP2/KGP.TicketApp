@@ -10,6 +10,7 @@ using KGP.TicketAPP.Utils.Extensions;
 using KGP.TicketApp.Repositories;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
+using KGP.TicketApp.Backend.Validation;
 
 namespace KGP.TicketApp.Backend.Controllers
 {
@@ -68,6 +69,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// </summary>
         /// <returns></returns>  
         [HttpPost("{id}")]
+        [ServiceFilter(typeof(TokenEventValidation))]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,11 +81,6 @@ namespace KGP.TicketApp.Backend.Controllers
             if (eventToEdit == null)
             {
                 return NotFound(EventNotFound);
-            }
-
-            if (eventToEdit.Organizer.Id != this.GetCallingUserId())
-            {
-                return Unauthorized();
             }
 
             EditEvent(eventToEdit, request);
@@ -199,6 +196,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(TokenEventValidation))]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -210,11 +208,6 @@ namespace KGP.TicketApp.Backend.Controllers
             if (@event == null)
             {
                 return NotFound(EventNotFound);
-            }
-
-            if (@event.Organizer.Id != this.GetCallingUserId())
-            {
-                return Unauthorized();
             }
 
             eventRepository.Delete(@event);
