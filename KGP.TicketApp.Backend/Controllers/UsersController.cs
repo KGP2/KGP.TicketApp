@@ -52,7 +52,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("clients/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO<ClientDTO>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostClientsLogin([FromBody] LoginCredentialsRequest request)
         {
@@ -65,7 +65,12 @@ namespace KGP.TicketApp.Backend.Controllers
             var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Client, Request.Host.Host);
             Response.Cookies.Append("Token", token.token, token.options);
 
-            return Ok(ClientDTO.FromDatabaseUser(user));
+            return Ok(new LoginDTO<ClientDTO>
+            {
+                Token = token.token,
+                ExpiresAt = token.options.Expires?.DateTime,
+                User = ClientDTO.FromDatabaseUser(user)
+            });
         }
 
         // POST users/organizers/login
@@ -76,7 +81,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <returns></returns>      
         [AllowAnonymous]
         [HttpPost("organizers/login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizerDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO<OrganizerDTO>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostOrganizersLogin([FromBody] LoginCredentialsRequest request)
         {
@@ -89,7 +94,12 @@ namespace KGP.TicketApp.Backend.Controllers
             var token = JwtTokenHelper.CreateToken(request.Email, user.Id.ToString(), settings.JwtKey, settings.JwtIssuer, Types.Organizer, Request.Host.Host);
             Response.Cookies.Append("Token", token.token, token.options);
 
-            return Ok(OrganizerDTO.FromDatabaseUser(user));
+            return Ok(new LoginDTO<OrganizerDTO>
+            {
+                Token = token.token,
+                ExpiresAt = token.options.Expires?.DateTime,
+                User = OrganizerDTO.FromDatabaseUser(user)
+            });
         }
 
         // POST users/registerOrganizer
@@ -153,6 +163,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Client, false })]
+        [ServiceFilter(typeof(TokenValidation))]
         [HttpPost("editClient/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Client)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -164,9 +175,6 @@ namespace KGP.TicketApp.Backend.Controllers
 
             if (clientToEdit == null)
                 return NotFound("Client not found");
-
-            if (clientToEdit.Id != this.GetCallingUserId())
-                return Unauthorized();
 
             clientToEdit.UpdateUser(request);
             repositoryWrapper.ClientRepository.Update(clientToEdit);
@@ -182,6 +190,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [TypeFilter(typeof(RegisterEditUserValidation), Arguments = new object[] { Types.Organizer, false })]
+        [ServiceFilter(typeof(TokenValidation))]
         [HttpPost("editOrganizer/{id}")]
         [Authorize(AuthenticationSchemes = JwtTokenHelper.Organizer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -191,12 +200,8 @@ namespace KGP.TicketApp.Backend.Controllers
         {
             var organizerToEdit = repositoryWrapper.OrganizerRepository.GetById(id);
 
-            if (organizerToEdit == null)          
+            if (organizerToEdit == null)
                 return NotFound("Organizer not found");
-            
-            if (organizerToEdit.Id != this.GetCallingUserId())          
-                return Unauthorized();
-            
             organizerToEdit.UpdateUser(request);
             repositoryWrapper.OrganizerRepository.Update(organizerToEdit);
             repositoryWrapper.Save();
@@ -250,7 +255,7 @@ namespace KGP.TicketApp.Backend.Controllers
         public IActionResult PostBlockOrganizer(Guid id)
         {
             // TODO: Jak zrobimy admina
-                return BadRequest();
+            return BadRequest();
         }
 
         /// <summary>

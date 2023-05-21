@@ -42,9 +42,10 @@ namespace KGP.TicketApp.Backend.Helpers
             var options = new CookieOptions()
             {
                 Expires = expDate,
+                Domain = null
             };
-            if (host == "localhost")
-                options.Domain = null;
+            //if (host == "localhost")
+            //    options.Domain = null;
 
             return (stringToken, options);
         }

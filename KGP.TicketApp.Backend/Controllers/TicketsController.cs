@@ -1,4 +1,7 @@
-﻿using KGP.TicketApp.Model.DTOs;
+﻿using KGP.TicketApp.Backend.Helpers;
+using KGP.TicketApp.Contracts;
+using KGP.TicketApp.Model.Database.Tables;
+using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,13 +11,28 @@ namespace KGP.TicketApp.Backend.Controllers
 {
     [Route("tickets")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = $"{JwtTokenHelper.Organizer},{JwtTokenHelper.Client}")]
     public class TicketsController : ControllerBase
     {
+        #region Fields
+
+        private IRepositoryWrapper repositoryWrapper;
+
+        #endregion
+
+        #region Constructors
+
+        public TicketsController(IRepositoryWrapper repositoryWrapper)
+        {
+            this.repositoryWrapper = repositoryWrapper;
+        }
+
+        #endregion
+
         #region Post methods
 
         /// <summary>
-        /// [NYI] Create a ticket.
+        /// Create a ticket.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns> 
@@ -24,11 +42,28 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult PostTickets([FromBody] PostTicketRequest request)
         {
-            return BadRequest();
+            var Event = repositoryWrapper.EventRepository.GetById(request.EventId);
+            if (Event == null)
+                return NotFound("Event does not exists.");
+            
+            var user = repositoryWrapper.ClientRepository.GetById(request.UserId);
+            if (user == null) 
+                return NotFound("User does not exists.");
+
+            repositoryWrapper.TicketRepository.Create(new Ticket()
+            {
+                IsValidated = false,
+                Owner = user,
+                Event = Event
+            });
+
+            repositoryWrapper.Save();
+
+            return Ok();
         }
 
         /// <summary>
-        /// [NYI] Validate specified ticket.
+        /// Validate specified ticket.
         /// </summary>
         /// <param name="ticketId"></param>
         /// <returns></returns> 
@@ -36,9 +71,18 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult PostValidateTicket(string ticketId)
+        public IActionResult PostValidateTicket(Guid ticketId)
         {
-            return BadRequest();
+            var ticket = repositoryWrapper.TicketRepository.GetById(ticketId);
+            if (ticket == null)
+                return NotFound("Ticket not found.");
+            if (ticket.IsValidated == true)
+                return BadRequest("Ticket was already validated.");
+
+            ticket.IsValidated = true;
+            repositoryWrapper.TicketRepository.Update(ticket);
+            repositoryWrapper.Save();
+            return Ok();
         }
 
         #endregion
@@ -46,19 +90,23 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Get methods
 
         /// <summary>
-        /// [NYI] Get all tickets.
+        /// Get tickets.
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TicketDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetTickets()
+        public IActionResult GetTickets(TakeSkipRequest request)
         {
-            return BadRequest();
+            var tickets = repositoryWrapper.TicketRepository.TakeSkip(request.Take, request.Skip);
+            if (tickets == null)
+                return BadRequest("Returned ticket query was null. Contact administrator.");
+
+            return Ok(tickets.Select(it => TicketDTO.FromDatabaseTicket(it)).ToArray());
         }
 
         /// <summary>
-        /// [NYI] Get details of specified ticket.
+        /// Get details of specified ticket.
         /// </summary>
         /// <param name="ticketId"></param>
         /// <returns></returns>
@@ -66,13 +114,17 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TicketDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetTicket(string ticketId)
+        public IActionResult GetTicket(Guid ticketId)
         {
-            return BadRequest();
+            var ticket = repositoryWrapper.TicketRepository.GetById(ticketId);
+            if (ticket == null)
+                return NotFound("Ticket with this id does not exists");
+
+            return Ok(TicketDTO.FromDatabaseTicket(ticket));
         }
 
         /// <summary>
-        /// [NYI] Get all tickets owned by specified owner.
+        /// Get all tickets owned by specified owner.
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns></returns>
@@ -80,9 +132,13 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TicketDTO[]))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetTicketsByOwner(string ownerId)
+        public IActionResult GetTicketsByOwner(Guid ownerId)
         {
-            return BadRequest();
+            var tickets = repositoryWrapper.TicketRepository.GetTicketsByOwner(ownerId);
+            if (tickets == null || tickets.Count() == 0)
+                return NotFound($"Cannot found tickets for requested owner");
+
+            return Ok(tickets.Select(it => TicketDTO.FromDatabaseTicket(it)).ToArray());
         }
 
         #endregion

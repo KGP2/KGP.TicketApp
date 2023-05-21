@@ -2,7 +2,6 @@
 
 namespace KGP.TicketApp.Model.DTOs
 {
-    // TODO: model from database (generated with EF)
     public record OrganizerDTO
     {
         public string? Id { get; set; }
