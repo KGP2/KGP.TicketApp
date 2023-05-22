@@ -3,6 +3,7 @@ using KGP.TicketApp.Model.Requests;
 using KGP.TicketAPP.Utils.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.IdentityModel.Tokens;
 using Org.BouncyCastle.Crypto.Tls;
 using System.Security.Principal;
 using System.Text;
@@ -44,10 +45,12 @@ namespace KGP.TicketApp.Backend.Validation
             StringBuilder stringBuilder = new StringBuilder();
             var req = (EditRegisterUserRequest)param.Value;
 
-            if (!validationService.EmailValidator.Validate(req.Email, out var error1))
-                stringBuilder.AppendLine(error1);
-            if (!validationService.PasswordValidator.Validate(req.Password, out var error2))          
-                stringBuilder.AppendLine(error2);
+            if (!req.Email.IsNullOrEmpty() || checkType)
+                if (!validationService.EmailValidator.Validate(req.Email, out var error1))
+                    stringBuilder.AppendLine(error1);
+            if (!req.Password.IsNullOrEmpty() || checkType)
+                if (!validationService.PasswordValidator.Validate(req.Password, out var error2))          
+                    stringBuilder.AppendLine(error2);
 
             if (checkType)
             {
