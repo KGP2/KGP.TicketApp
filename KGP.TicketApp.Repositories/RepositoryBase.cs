@@ -45,7 +45,20 @@ namespace KGP.TicketApp.Repositories
 
         public virtual void Update(T entity)
         {
-            DatabaseContext.Set<T>().Update(entity);
+            var context = DatabaseContext.Set<T>();
+            var entry = context.Attach(entity);
+            var entityType = context.Entry(entity).Metadata;
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.IsPrimaryKey())
+                    continue;
+
+                var currentValue = property.PropertyInfo.GetValue(entity);
+                if (currentValue != null)
+                {
+                    entry.Property(property.Name).IsModified = true;
+                }
+            }
         }
 
         public virtual T? GetById(Guid id)
