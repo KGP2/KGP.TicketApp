@@ -87,8 +87,8 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 OrganizerId = organizerId,
                 Date = DateTime.UtcNow,
                 ParticipiantsLimit = 10,
-                Photo = "", // TODO
-                Place = "", // TODO
+                Photo = "s", // TODO
+                Place = "s", // TODO
                 Price = 100.21M,
                 SaleStartDate = DateTime.Today.AddDays(-1),
                 SaleEndTime = DateTime.Today.AddDays(1)
