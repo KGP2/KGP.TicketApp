@@ -1,6 +1,7 @@
 ﻿using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database;
 using KGP.TicketApp.Model.Database.Tables;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace KGP.TicketApp.Repositories
 
         public IQueryable<Ticket> GetTicketsByOwner(Guid ownerId)
         {
-            return DatabaseContext.Tickets.Where(it => it.Owner.Id == ownerId);
+            return DatabaseContext.Tickets.Include(t => t.Event).Where(it => it.Owner.Id == ownerId);
         }
     }
 }
