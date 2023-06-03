@@ -55,7 +55,7 @@ namespace KGP.TicketApp.Backend.Controllers
                 Price = request.Price.ToString(), 
                 TicketSaleStartDate = request.SaleStartDate,
                 TicketSaleEndDate = request.SaleStartDate,
-                // TODO: photo
+                Photo = request.Photo,
             });
             repositoryWrapper.Save();
             return Ok();
