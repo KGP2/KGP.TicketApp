@@ -57,9 +57,6 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
             {
                 City = "a",
                 StreetName = "b",
-                BuildingName = "c",
-                PostalCode = "d",
-                StreetNumber = "e"
             };
 
             eventId = Guid.NewGuid();

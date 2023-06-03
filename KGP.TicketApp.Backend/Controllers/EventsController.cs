@@ -119,7 +119,8 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <summary>
         /// Get all events.
         /// </summary>
-        /// <returns></returns> 
+        /// <returns></returns>
+        
         [HttpGet()]
         [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
@@ -135,6 +136,7 @@ namespace KGP.TicketApp.Backend.Controllers
         /// Get events by name.
         /// </summary>
         /// <returns></returns> 
+        [Route("/getEventsByName")]
         [HttpGet()]
         [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]

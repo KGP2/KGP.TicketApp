@@ -17,7 +17,7 @@ namespace KGP.TicketApp.Model.DTOs
 
         private static string FormatLocationString(Location location)
         {
-            return $"{location.City}, {location.BuildingName}, {location.StreetName} {location.StreetNumber} {location.PostalCode}";
+            return $"{location.City}, {location.StreetName} ";
         }
 
         public static EventDTO FromDatabaseEvent(Event @event)
