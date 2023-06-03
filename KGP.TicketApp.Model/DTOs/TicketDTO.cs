@@ -11,7 +11,7 @@ namespace KGP.TicketApp.Model.DTOs
         {
             return new TicketDTO()
             {
-                EventId = ticket.Event.Id.ToString(),
+                EventId = ticket.Event == null ? "test value - to remove" : ticket.Event.Id.ToString(),
                 TicketId = ticket.Id.ToString(),
             };
         }

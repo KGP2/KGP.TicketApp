@@ -12,6 +12,8 @@ using System.Text;
 using KGP.TicketApp.Backend.Helpers;
 using KGP.TicketApp.Backend.Validation;
 using KGP.TicketApp.Utils.PdfGenerator;
+using KGP.TicketApp.Utilities.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace KGP.TicketApp.Backend
 {
@@ -88,6 +90,12 @@ namespace KGP.TicketApp.Backend
             builder.Services.AddScoped<TokenValidation>();
             builder.Services.AddScoped<TokenEventValidation>();
             builder.Services.AddScoped<PdfGeneratorService>();
+            builder.Services.AddScoped(provider =>
+            {
+                string connectionString = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().BlobConnectionString;
+                string cointainerName = builder.Configuration.GetSection("Backend").Get<ApplicationOptions>().TicketsCointainerName;
+                return new SimpleBlobService(connectionString, cointainerName);
+            });
             builder.Services.AddSwaggerGen(options =>
             {
                 var basePath = AppContext.BaseDirectory;
