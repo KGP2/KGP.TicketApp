@@ -32,5 +32,7 @@ namespace KGP.TicketApp.Model.Database.Tables
         public DateTime TicketSaleStartDate { get; set; }
 
         public DateTime TicketSaleEndDate { get; set; }
+
+        public string Photo { get; set; } = null!;
     }
 }
