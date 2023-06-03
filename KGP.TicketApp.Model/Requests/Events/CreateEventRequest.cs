@@ -6,7 +6,8 @@ namespace KGP.TicketApp.Model.Requests.Events
     {
         public string Name { get; set; }
         public DateTime Date { get; set; }
-        public string Place { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
         public Guid OrganizerId { get; set; }
         public int ParticipiantsLimit { get; set; }
         public decimal Price { get; set; }
