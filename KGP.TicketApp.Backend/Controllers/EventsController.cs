@@ -48,14 +48,11 @@ namespace KGP.TicketApp.Backend.Controllers
                 Date = request.Date,
                 Place = new Location
                 {
-                    City = "TODO",
-                    BuildingName = "TODO",
-                    PostalCode = "TODO",
-                    StreetName = "TODO",
-                    StreetNumber = "TODO"
-                }, // TODO: Fix when documentation updates
+                    City = request.City,
+                    StreetName = request.Street,
+                }, 
                 Organizer = new Organizer { Id = this.GetCallingUserId() },
-                Price = request.Price.ToString(), // TODO: Fix when documentation updates
+                Price = request.Price.ToString(), 
                 TicketSaleStartDate = request.SaleStartDate,
                 TicketSaleEndDate = request.SaleStartDate,
                 // TODO: photo
@@ -122,7 +119,8 @@ namespace KGP.TicketApp.Backend.Controllers
         /// <summary>
         /// Get all events.
         /// </summary>
-        /// <returns></returns> 
+        /// <returns></returns>
+        
         [HttpGet()]
         [AllowAnonymous()]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
@@ -131,6 +129,22 @@ namespace KGP.TicketApp.Backend.Controllers
         {
             return Ok(eventRepository
                 .GetByFilterFromRequest(request)
+                .Select(e => EventDTO.FromDatabaseEvent(e)));
+        }
+
+        /// <summary>
+        /// Get events by name.
+        /// </summary>
+        /// <returns></returns> 
+        [Route("/getEventsByName")]
+        [HttpGet()]
+        [AllowAnonymous()]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO[]))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetEventsByName(string name)
+        {
+            return Ok(eventRepository
+                .GetByName(name)
                 .Select(e => EventDTO.FromDatabaseEvent(e)));
         }
 

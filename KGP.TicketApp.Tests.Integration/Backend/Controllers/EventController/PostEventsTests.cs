@@ -57,9 +57,6 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
             {
                 City = "a",
                 StreetName = "b",
-                BuildingName = "c",
-                PostalCode = "d",
-                StreetNumber = "e"
             };
 
             eventId = Guid.NewGuid();
@@ -87,8 +84,9 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 OrganizerId = organizerId,
                 Date = DateTime.UtcNow,
                 ParticipiantsLimit = 10,
-                Photo = "", // TODO
-                Place = "", // TODO
+                Photo = "d", // TODO
+                Street = "d", //
+                City = "d",  // 
                 Price = 100.21M,
                 SaleStartDate = DateTime.Today.AddDays(-1),
                 SaleEndTime = DateTime.Today.AddDays(1)
