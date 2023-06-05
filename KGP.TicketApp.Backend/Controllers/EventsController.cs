@@ -44,7 +44,7 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostEvents([FromBody] CreateEventRequest request)
         {
-            if (Encoding.UTF8.GetByteCount(request.Photo) / (1024.0 * 1024.0) > 30);
+            if (Encoding.UTF8.GetByteCount(request.Photo) / (1024.0 * 1024.0) > 30)
                 return BadRequest("Photo max size is 30 MB");
 
             eventRepository.Create(new Event
