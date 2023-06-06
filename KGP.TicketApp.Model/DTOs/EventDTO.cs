@@ -33,7 +33,7 @@ namespace KGP.TicketApp.Model.DTOs
                 Price = double.Parse(@event.Price), //TODO
                 SaleStartDate = @event.TicketSaleStartDate,
                 SaleEndDate = @event.TicketSaleEndDate,
-                Photo = null //TODO
+                Photo = @event.Photo,
             };
         }
     }

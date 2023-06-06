@@ -69,6 +69,7 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 Organizer = organizer,
                 Place = location,
                 Price = "2137",
+                Photo = "s"
             });
             databaseContext.SaveChanges();
         }

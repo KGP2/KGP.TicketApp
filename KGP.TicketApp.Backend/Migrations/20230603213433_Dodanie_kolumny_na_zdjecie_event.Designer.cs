@@ -4,6 +4,7 @@ using KGP.TicketApp.Model.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KGP.TicketApp.Backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230603213433_Dodanie_kolumny_na_zdjecie_event")]
+    partial class Dodanie_kolumny_na_zdjecie_event
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,12 +239,27 @@ namespace KGP.TicketApp.Backend.Migrations
                             b1.Property<Guid>("EventId")
                                 .HasColumnType("uniqueidentifier");
 
+                            b1.Property<string>("BuildingName")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)");
+
                             b1.Property<string>("City")
                                 .IsRequired()
                                 .HasMaxLength(200)
                                 .HasColumnType("nvarchar(200)");
 
+                            b1.Property<string>("PostalCode")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)");
+
                             b1.Property<string>("StreetName")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)");
+
+                            b1.Property<string>("StreetNumber")
                                 .IsRequired()
                                 .HasMaxLength(200)
                                 .HasColumnType("nvarchar(200)");

@@ -11,5 +11,7 @@ namespace KGP.TicketApp.Model.Database.Tables
         public Event Event { get; set; } = null!;
 
         public bool IsValidated { get; set; }
+
+        public string BlobTicketUrl { get; set; } = null!;
     }
 }

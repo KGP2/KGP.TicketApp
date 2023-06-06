@@ -71,7 +71,8 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 TicketSaleStartDate = DateTime.Today.AddDays(-1),
                 Organizer = organizer,
                 Place = location,
-                Price = "2137"
+                Price = "2137",
+                Photo = "s"
             });
             databaseContext.SaveChanges();
         }
@@ -84,9 +85,9 @@ namespace KGP.TicketApp.Tests.Integration.Backend.Controllers.EventController
                 OrganizerId = organizerId,
                 Date = DateTime.UtcNow,
                 ParticipiantsLimit = 10,
-                Photo = "d", // TODO
-                Street = "d", //
-                City = "d",  // 
+                Photo = "s", // TODO
+                Street = "s", // TODO
+                City = "a",
                 Price = 100.21M,
                 SaleStartDate = DateTime.Today.AddDays(-1),
                 SaleEndTime = DateTime.Today.AddDays(1)

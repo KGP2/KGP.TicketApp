@@ -11,6 +11,8 @@ using KGP.TicketApp.Repositories;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using KGP.TicketApp.Backend.Validation;
+using System.Text;
+using System;
 
 namespace KGP.TicketApp.Backend.Controllers
 {
@@ -42,6 +44,9 @@ namespace KGP.TicketApp.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostEvents([FromBody] CreateEventRequest request)
         {
+            if (Encoding.UTF8.GetByteCount(request.Photo) / (1024.0 * 1024.0) > 30)
+                return BadRequest("Photo max size is 30 MB");
+
             eventRepository.Create(new Event
             {
                 Name = request.Name,
@@ -55,7 +60,7 @@ namespace KGP.TicketApp.Backend.Controllers
                 Price = request.Price.ToString(), 
                 TicketSaleStartDate = request.SaleStartDate,
                 TicketSaleEndDate = request.SaleStartDate,
-                // TODO: photo
+                Photo = request.Photo,
             });
             repositoryWrapper.Save();
             return Ok();

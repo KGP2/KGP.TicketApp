@@ -3,6 +3,8 @@ using KGP.TicketApp.Contracts;
 using KGP.TicketApp.Model.Database.Tables;
 using KGP.TicketApp.Model.DTOs;
 using KGP.TicketApp.Model.Requests;
+using KGP.TicketApp.Utilities.Services;
+using KGP.TicketApp.Utils.PdfGenerator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +19,18 @@ namespace KGP.TicketApp.Backend.Controllers
         #region Fields
 
         private IRepositoryWrapper repositoryWrapper;
+        private SimpleBlobService simpleBlobService;
+        private PdfGeneratorService pdfGeneratorService;
 
         #endregion
 
         #region Constructors
 
-        public TicketsController(IRepositoryWrapper repositoryWrapper)
+        public TicketsController(IRepositoryWrapper repositoryWrapper, SimpleBlobService blobService, PdfGeneratorService generatorService)
         {
             this.repositoryWrapper = repositoryWrapper;
+            this.simpleBlobService = blobService;
+            this.pdfGeneratorService = generatorService;
         }
 
         #endregion
@@ -50,13 +56,32 @@ namespace KGP.TicketApp.Backend.Controllers
             if (user == null) 
                 return NotFound("User does not exists.");
 
-            repositoryWrapper.TicketRepository.Create(new Ticket()
-            {
-                IsValidated = false,
-                Owner = user,
-                Event = Event
-            });
+            var ticketId = Guid.NewGuid();
 
+            void Save(byte[] bytes)
+            {
+                repositoryWrapper.TicketRepository.Create(new Ticket()
+                {
+                    IsValidated = false,
+                    Owner = user,
+                    Event = Event,
+                    BlobTicketUrl = simpleBlobService.SaveTicket(bytes, $"{ticketId}.pdf"),
+                    Id = ticketId
+                });
+            }
+
+            pdfGeneratorService.TicketGenerator.InitData(new Utils.PdfGenerator.PdfTicketGenerator.TicketGeneratorInitData()
+            {
+                ticket = new Ticket()
+                {
+                    BlobTicketUrl = "",
+                    Id = ticketId,
+                    Owner = user,
+                    Event = Event
+                }
+            });
+            pdfGeneratorService.TicketGenerator.Generate();
+            pdfGeneratorService.TicketGenerator.Save(Save);
             repositoryWrapper.Save();
 
             return Ok();
