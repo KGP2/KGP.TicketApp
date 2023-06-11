@@ -53,7 +53,7 @@ namespace KGP.TicketApp.Repositories
                 if (property.IsPrimaryKey())
                     continue;
 
-                var currentValue = property.PropertyInfo.GetValue(entity);
+                var currentValue = property.PropertyInfo?.GetValue(entity);
                 if (currentValue != null)
                 {
                     entry.Property(property.Name).IsModified = true;
