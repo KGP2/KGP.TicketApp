@@ -61,6 +61,7 @@ namespace KGP.TicketApp.Backend.Controllers
                 TicketSaleStartDate = request.SaleStartDate,
                 TicketSaleEndDate = request.SaleStartDate,
                 Photo = request.Photo,
+                ParticipantsLimit = request.ParticipiantsLimit
             });
             repositoryWrapper.Save();
             return Ok();
