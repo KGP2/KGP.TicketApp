@@ -24,7 +24,7 @@ namespace KGP.TicketApp.Repositories
         }
         public override Ticket? GetById(Guid id)
         {
-            return DatabaseContext.Tickets.Include(it => it.Event).Where(it => it.Id == id).First();
+            return DatabaseContext.Tickets.Include(it => it.Event).Where(it => it.Id == id).FirstOrDefault();
         }
     }
 }
